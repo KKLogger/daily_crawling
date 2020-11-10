@@ -835,5 +835,6 @@ car_urls = car_urls[num_per_url*(server_num-1):num_per_url*server_num]
 
 print(len(car_urls))
 start(car_urls, server_num)
-Uploader('result{server_num}_t.json'.format(server_num=server_num))
+Uploader(
+    '/home/centos/daily_crawling/result{server_num}_t.json'.format(server_num=server_num))
 # process_json(server_num)
