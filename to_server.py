@@ -1,13 +1,9 @@
 import os
 import sys
-from ast import literal_eval
+import literal_eval
 import json
-import multiprocessing
-from itertools import repeat
-from multiprocessing import Pool, freeze_support, Manager
 import requests
 from bs4 import BeautifulSoup as bs
-import numpy as np
 import requests
 import pandas as pd
 import paramiko
@@ -810,6 +806,7 @@ class Uploader:
 # with open('argu.txt', 'r') as f:
 #     server_num = f.read()
 server_num = sys.argv[1]
+print(server_num)
 num_per_url = 2700
 print(server_num)
 df = pd.read_csv('filtered_url.csv')
