@@ -27,7 +27,7 @@ def get_car_info(url, temp):
         'Sec-Fetch-Site': 'none',
         'Sec-Fetch-User': '?1',
         'Upgrade-Insecure-Requests': '1',
-        'User-Agent': UserAgent().random
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
     }
     response = requests.get(url, headers=headers)
     soup = bs(response.text, 'html.parser')
@@ -51,7 +51,7 @@ def get_car_info(url, temp):
         'Sec-Fetch-Dest': 'empty',
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'same-origin',
-        'User-Agent': UserAgent().random,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36',
         'X-AJAX': 'true',
     }
     json_data = {
@@ -217,7 +217,7 @@ def get_options(url):
         'Sec-Fetch-Site': 'same-origin',
         'Sec-Fetch-User': '?1',
         'Upgrade-Insecure-Requests': '1',
-        'User-Agent': UserAgent().random
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
     }
     jump = len('?carSeq=')
     result = dict()
@@ -321,7 +321,7 @@ def get_history(url, temp):
         'Sec-Fetch-Site': 'same-origin',
         'Sec-Fetch-User': '?1',
         'Upgrade-Insecure-Requests': '1',
-        'User-Agent': UserAgent().random
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
     }
     datas = {
         'layerId': 'layerCarHistoryInfo',
@@ -685,10 +685,11 @@ def get_checkdata(url, temp):
         'Sec-Fetch-Site': 'none',
         'Sec-Fetch-User': '?1',
         'Upgrade-Insecure-Requests': '1',
-        'User-Agent': UserAgent().random
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
     }
     res = requests.get(
         url, headers=headers)
+
     soup = bs(res.text, 'html.parser')
     chk_tag_url = soup.find('li', {'class': 'used01'}).find('a')[
         'data-link-url']
