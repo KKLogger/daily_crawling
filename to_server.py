@@ -429,18 +429,27 @@ def start(urls, server_num):
     num = 0
     time.sleep(random.randint(1, 3))
     for url in urls:
+
         temp = dict()
         try:
             temp = get_car_info(
                 url, temp)
+        except:
+            print("error in car info")
+        try:
             temp.update(get_history(
                 url, temp))
+        except:
+            print("error in car history")
+        try:
             temp['Options'] = get_options(
                 url)
+        except:
+            print("error in car options")
+        try:
             temp = get_checkdata(url, temp)
         except:
-            print('error')
-            pass
+            print("error in car checkdata")
         num += 1
 
         print("현재 : ", num)
@@ -807,9 +816,9 @@ class Uploader:
 # with open('argu.txt', 'r') as f:
 #     server_num = f.read()
 server_num = sys.argv[1]
-print(server_num)
+
 num_per_url = 2700
-print(server_num)
+
 df = pd.read_csv('filtered_url.csv')
 car_urls = list(df['url'].values)
 server_num = int(server_num)
