@@ -19,5 +19,6 @@ headers = {
 }
 response = requests.get(url, headers=headers)
 soup = bs(response.text, 'html.parser')
+print(soup)
 Cookie = response.cookies.get('cha-cid')
 Cookie = "cha-cid=" + Cookie + ";"
