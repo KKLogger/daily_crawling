@@ -464,8 +464,8 @@ def start(urls, server_num):
                 with open('result{server_num}_t.json'.format(server_num=server_num), 'a', encoding='utf-8-sig') as outfile:
                     json.dump(temp, outfile, indent=4,
                               ensure_ascii=False, sort_keys=True)
-        except:
-            print("error")
+        except Exception as e:
+            print(f"error : {e}")
 
 
 def crawl_iframe(url, temp):
