@@ -31,8 +31,8 @@ def get_car_info(url, temp):
     }
     response = requests.get(url, headers=headers)
     soup = bs(response.text, 'html.parser')
-    if soup.find('h2') is None:
-        raise Exception("blocked")
+    # if soup.find('h2') is None:
+    #     raise Exception("blocked")
     Cookie = response.cookies.get('cha-cid')
     Cookie = "cha-cid=" + Cookie + ";"
     carSeq = url[url.index('?carSeq=')+len('?carSeq='):]
