@@ -431,7 +431,7 @@ def get_history(url, temp):
 
 def start(urls, server_num):
     num = 0
-    time.sleep(randint(1, 3))
+    time.sleep(random.randint(1, 3))
     for url in urls:
         temp = dict()
         try:
