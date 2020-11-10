@@ -84,17 +84,20 @@ def get_car_info(url, temp):
 
     car_year = car_info[1]
     car_year = car_year[car_year.index('(')+1:car_year.index(')')]
-
-    if soup.find('div', {'class': 'suc-price'}) is None:
-        if soup.find_all('div', {'class': 'car-buy-debt-m'})[1].find('div').text == '리스 이용 금융상담문의':
-            car_saletype = 'NORMAL_SALE'
-            SeparationLease = "False"
+    try:
+        if soup.find('div', {'class': 'suc-price'}) is None:
+            if soup.find_all('div', {'class': 'car-buy-debt-m'})[1].find('div').text == '리스 이용 금융상담문의':
+                car_saletype = 'NORMAL_SALE'
+                SeparationLease = "False"
+            else:
+                car_saletype = 'LEASE_SALE'
+                SeparationLease = "True"
         else:
             car_saletype = 'LEASE_SALE'
             SeparationLease = "True"
-    else:
-        car_saletype = 'LEASE_SALE'
-        SeparationLease = "True"
+    except:
+        car_saletype = 'null'
+        SeparationLease = "null"
     if soup.find('div', {'class': 'dealer-info-area'}).find('span', {'place-add'}).text == '개인판매자':
         SeparationDealer = 'False'
         SeparationIndividual = 'True'
@@ -450,17 +453,20 @@ def start(urls, server_num):
         #     temp = get_checkdata(url, temp)
         # except:
         #     print("error in car checkdata")
-        temp = get_car_info(url, temp)
-        temp.update(get_history(url, temp))
-        temp['Options'] = get_options(url)
-        temp = get_checkdata(url, temp)
-        num += 1
+        try:
+            temp = get_car_info(url, temp)
+            temp.update(get_history(url, temp))
+            temp['Options'] = get_options(url)
+            temp = get_checkdata(url, temp)
+            num += 1
 
-        print("현재 : ", num)
-        if bool(temp):
-            with open('result{server_num}_t.json'.format(server_num=server_num), 'a', encoding='utf-8-sig') as outfile:
-                json.dump(temp, outfile, indent=4,
-                          ensure_ascii=False, sort_keys=True)
+            print("현재 : ", num)
+            if bool(temp):
+                with open('result{server_num}_t.json'.format(server_num=server_num), 'a', encoding='utf-8-sig') as outfile:
+                    json.dump(temp, outfile, indent=4,
+                              ensure_ascii=False, sort_keys=True)
+        except:
+            print("error")
 
 
 def crawl_iframe(url, temp):
