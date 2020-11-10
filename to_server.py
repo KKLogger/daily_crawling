@@ -431,25 +431,29 @@ def start(urls, server_num):
     for url in urls:
 
         temp = dict()
-        try:
-            temp = get_car_info(
-                url, temp)
-        except:
-            print("error in car info")
-        try:
-            temp.update(get_history(
-                url, temp))
-        except:
-            print("error in car history")
-        try:
-            temp['Options'] = get_options(
-                url)
-        except:
-            print("error in car options")
-        try:
-            temp = get_checkdata(url, temp)
-        except:
-            print("error in car checkdata")
+        # try:
+        #     temp = get_car_info(
+        #         url, temp)
+        # except:
+        #     print("error in car info")
+        # try:
+        #     temp.update(get_history(
+        #         url, temp))
+        # except:
+        #     print("error in car history")
+        # try:
+        #     temp['Options'] = get_options(
+        #         url)
+        # except:
+        #     print("error in car options")
+        # try:
+        #     temp = get_checkdata(url, temp)
+        # except:
+        #     print("error in car checkdata")
+        temp = get_car_info(url, temp)
+        temp.update(get_history(url, temp))
+        temp['Options'] = get_options(url)
+        temp = get_checkdata(url, temp)
         num += 1
 
         print("현재 : ", num)
