@@ -811,6 +811,7 @@ num_per_url = 2700
 print(server_num)
 df = pd.read_csv('filtered_url.csv')
 car_urls = list(df['url'].values)
+server_num = int(server_num)
 car_urls = car_urls[num_per_url*(server_num-1):num_per_url*server_num]
 
 print(len(car_urls))
