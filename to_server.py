@@ -73,7 +73,6 @@ def get_car_info(url, temp):
         temp['Model'] = 'null'
         temp['Badge'] = 'null'
         temp['Grade'] = 'null'
-    # 차 정보
     car_price = soup.find(
         'div', {'class': 'car-buy-price'}).find('div').find('strong').text
     car_info1 = soup.find('dl', {'class': 'claerFix'}).find_all('dd')
