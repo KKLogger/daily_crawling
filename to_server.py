@@ -1,6 +1,6 @@
 import os
 import sys
-import literal_eval
+from ast import literal_eval
 import json
 import requests
 from bs4 import BeautifulSoup as bs
