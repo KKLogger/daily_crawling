@@ -791,7 +791,7 @@ def process_json(server_num):
 
     print("총 json에 차량 개수 ", len(result))
     os.remove('result{server_num}_t.json'.format(server_num=server_num))
-    with open('/tmp/result{server_num}.json'.format(server_num=server_num), 'w', encoding='utf-8-sig') as ff:
+    with open('result{server_num}.json'.format(server_num=server_num), 'w', encoding='utf-8-sig') as ff:
         json.dump(result, ff, indent=4, ensure_ascii=False, sort_keys=True)
 
 
@@ -826,7 +826,7 @@ class Uploader:
 #     server_num = f.read()
 server_num = sys.argv[1]
 
-num_per_url = 2700
+num_per_url = 2800
 
 df = pd.read_csv('filtered_url.csv')
 car_urls = list(df['url'].values)
@@ -835,6 +835,6 @@ car_urls = car_urls[num_per_url*(server_num-1):num_per_url*server_num]
 
 print(len(car_urls))
 start(car_urls, server_num)
-Uploader(
-    '/tmp/result{server_num}_t.json'.format(server_num=server_num))
+# Uploader(
+#     '/tmp/result{server_num}_t.json'.format(server_num=server_num))
 # process_json(server_num)
