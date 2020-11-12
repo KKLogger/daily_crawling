@@ -10,7 +10,6 @@ import paramiko
 from scp import SCPClient
 import time
 import random
-from fake_useragent import UserAgent
 
 
 def get_car_info(url, temp):
@@ -792,14 +791,13 @@ def process_json(server_num):
 
     print("총 json에 차량 개수 ", len(result))
     os.remove('result{server_num}_t.json'.format(server_num=server_num))
-    with open('result{server_num}.json'.format(server_num=server_num), 'w', encoding='utf-8-sig') as ff:
+    with open('/tmp/result{server_num}.json'.format(server_num=server_num), 'w', encoding='utf-8-sig') as ff:
         json.dump(result, ff, indent=4, ensure_ascii=False, sort_keys=True)
 
 
 class Uploader:
 
     def __init__(self, resultFileName):
-        self.localPath = '/home/centos/'
         self.resultFileName = resultFileName
         self.remotePath = '/home/centos/result_from_servers/'
         self.main()
@@ -807,7 +805,7 @@ class Uploader:
     def main(self):
         ssh = self.createSSHClient()
         scp = SCPClient(ssh.get_transport())
-        scp.put(self.localPath+self.resultFileName,
+        scp.put(self.resultFileName,
                 self.remotePath+self.resultFileName)
 
     def createSSHClient(self):
@@ -819,7 +817,7 @@ class Uploader:
         client.load_system_host_keys()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(host, port, username, password,
-                       key_filename='/home/centos/shopify.pem')  # public-key
+                       key_filename='/tmp/shopify.pem')  # public-key
         return client
 
 
@@ -838,5 +836,5 @@ car_urls = car_urls[num_per_url*(server_num-1):num_per_url*server_num]
 print(len(car_urls))
 start(car_urls, server_num)
 Uploader(
-    '/home/centos/daily_crawling/result{server_num}_t.json'.format(server_num=server_num))
+    '/tmp/result{server_num}_t.json'.format(server_num=server_num))
 # process_json(server_num)
