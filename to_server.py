@@ -809,7 +809,7 @@ class Uploader:
                 self.remotePath+self.resultFileName)
 
     def createSSHClient(self):
-        host = '133.186.211.78'  # IP
+        host = '133.186.210.142'  # IP
         username = 'centos'  # username
         password = 'gozjRjwu~!'  # password (root)
         port = 22
