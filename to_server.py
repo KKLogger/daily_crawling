@@ -430,7 +430,7 @@ def get_history(url, temp):
 
 def start(urls, server_num):
     num = 0
-    time.sleep(random.randint(1, 3))
+    time.sleep(random.randint(3, 10))
     for url in urls:
 
         temp = dict()
@@ -604,8 +604,8 @@ def crawl_iframe(url, temp):
     #     'tr')[39].find('div', {'class': 'option-ch'}).get('value')
     # result['고전원전기장치 고전원전기배선상태'] = table[4].find('tbody').find_all(
     #     'tr')[40].find('div', {'class': 'option-ch'}).get('value')
-    # check_inner['OtherFuelLeaks'] = table[4].find('tbody').find_all(
-    #     'tr')[41].find('div', {'class': 'option-ch'}).get('value')
+    check_inner['OtherFuelLeaks'] = table[4].find('tbody').find_all(
+        'tr')[41].find('div', {'class': 'option-ch'}).get('value')
     # result['수리필요 외장'] = table[5].find('tbody').find_all(
     #     'tr')[0].find('div', {'class': 'option-ch'}).get('value')
     # result['수리필요 광택'] = table[5].find('tbody').find_all(
@@ -831,7 +831,7 @@ num_per_url = 2800
 df = pd.read_csv('filtered_url.csv')
 car_urls = list(df['url'].values)
 server_num = int(server_num)
-car_urls = car_urls[1300+num_per_url*(server_num-1):num_per_url*server_num]
+car_urls = car_urls[num_per_url*(server_num-1):num_per_url*server_num]
 
 print(len(car_urls))
 start(car_urls, server_num)
