@@ -943,4 +943,6 @@ ssh_manager.send_file(local_path + 'result.json',
                       remote_path + 'result.json')  # 파일전송
 ssh_manager.send_file(local_path + 'sold_car.csv',
                       remote_path + 'sold_car.csv')  # 파일전송
+os.remove(local_path + 'result.json')
+os.remove(local_path + 'sold_car.csv')
 ssh_manager.close_ssh_client()  # 세션종료

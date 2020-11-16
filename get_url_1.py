@@ -43,9 +43,9 @@ def get_car_urls(user_code, num):
             time.sleep(2)
             response = requests.get(url)
             soup = bs(response.text, "html.parser")
-            #####종료 조건 ###############
-            # if page_num == 3:
-            #     break
+            ####종료 조건 ###############
+            if page_num == 3:
+                break
             if soup.find('span', {'class': 'txt'}) is not None:
                 print('종료')
                 break
@@ -58,6 +58,8 @@ def get_car_urls(user_code, num):
                 items = car.find_all('a')
                 for item in items:
                     if 'detail.kbc?carSeq' in item['href']:
+                        num += 1
+                        print(num)
                         item_href = item['href']
                         price = car.find(
                             'strong', {'class', 'pay'}).text.strip()
@@ -66,8 +68,6 @@ def get_car_urls(user_code, num):
                         else:
                             car_url_list.append(
                                 'https://www.kbchachacha.com' + item_href + "///" + price)
-            num += 1
-            print(num)
 
     return car_url_list
 

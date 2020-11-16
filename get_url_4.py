@@ -59,6 +59,8 @@ def get_car_urls(user_code, num):
                 for item in items:
                     if 'detail.kbc?carSeq' in item['href']:
                         item_href = item['href']
+                        num += 1
+                        print(num)
                         price = car.find(
                             'strong', {'class', 'pay'}).text.strip()
                         if 'https://' in item_href:
@@ -66,8 +68,6 @@ def get_car_urls(user_code, num):
                         else:
                             car_url_list.append(
                                 'https://www.kbchachacha.com' + item_href + "///" + price)
-            num += 1
-            print(num)
 
     return car_url_list
 
