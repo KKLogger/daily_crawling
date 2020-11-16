@@ -128,7 +128,7 @@ class SSHManager:
 
 
 if __name__ == '__main__':
-    server_num = sys.argv[1] + 1
+    server_num = int(sys.argv[1]) + 1
     s_time = time.time()
     car_url_list = list()
     num = 0
