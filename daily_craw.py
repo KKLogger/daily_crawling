@@ -898,18 +898,27 @@ ssh_manager.get_file(remote_path + 'filtered_url_3.csv',
                      local_path + 'filtered_url_3.csv')  # 파일다운로드
 ssh_manager.get_file(remote_path + 'filtered_url_4.csv',
                      local_path + 'filtered_url_4.csv')  # 파일다운로드
+ssh_manager.get_file(remote_path + 'filtered_url_5.csv',
+                     local_path + 'filtered_url_5.csv')  # 파일다운로드
+ssh_manager.get_file(remote_path + 'filtered_url_6.csv',
+                     local_path + 'filtered_url_6.csv')  # 파일다운로드
 r_df_1 = pd.read_csv(local_path + 'filtered_url_1.csv')
 r_df_2 = pd.read_csv(local_path + 'filtered_url_2.csv')
 r_df_3 = pd.read_csv(local_path + 'filtered_url_3.csv')
 r_df_4 = pd.read_csv(local_path + 'filtered_url_4.csv')
+r_df_5 = pd.read_csv(local_path + 'filtered_url_5.csv')
+r_df_6 = pd.read_csv(local_path + 'filtered_url_6.csv')
 p_df = pd.read_csv(local_path + 'filtered_url.csv')
 r_car_urls = list(r_df_1['url']) + list(r_df_2['url']) + \
-    list(r_df_3['url']) + list(r_df_4['url'])
+    list(r_df_3['url']) + list(r_df_4['url']) + \
+    list(r_df_5['url']) + list(r_df_6['url'])
 p_car_urls = list(p_df['url'])
 os.remove(local_path + 'filtered_url_1.csv')
 os.remove(local_path + 'filtered_url_2.csv')
 os.remove(local_path + 'filtered_url_3.csv')
 os.remove(local_path + 'filtered_url_4.csv')
+os.remove(local_path + 'filtered_url_5.csv')
+os.remove(local_path + 'filtered_url_6.csv')
 '''
 >>> 새로운 데이터 갱신
 '''
@@ -936,13 +945,13 @@ s_df.to_csv(local_path + 'sold_car.csv', encoding='euc-kr')
 >>>신규 등록차량 차량 정보 수집
 '''
 
-start(new_url)
-process_json()
+# start(new_url)
+# process_json()
 
-ssh_manager.send_file(local_path + 'result.json',
-                      remote_path + 'result.json')  # 파일전송
-ssh_manager.send_file(local_path + 'sold_car.csv',
-                      remote_path + 'sold_car.csv')  # 파일전송
-os.remove(local_path + 'result.json')
-os.remove(local_path + 'sold_car.csv')
+# ssh_manager.send_file(local_path + 'result.json',
+#                       remote_path + 'result.json')  # 파일전송
+# ssh_manager.send_file(local_path + 'sold_car.csv',
+#                       remote_path + 'sold_car.csv')  # 파일전송
+# os.remove(local_path + 'result.json')
+# os.remove(local_path + 'sold_car.csv')
 ssh_manager.close_ssh_client()  # 세션종료

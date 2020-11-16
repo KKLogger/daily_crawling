@@ -1,3 +1,4 @@
+import sys
 import paramiko
 import requests
 from bs4 import BeautifulSoup as bs
@@ -127,20 +128,24 @@ class SSHManager:
 
 
 if __name__ == '__main__':
+    server_num = sys.argv[1] + 1
     s_time = time.time()
     car_url_list = list()
     num = 0
+    user_codes = [['002001', '002007'], ['002005'], ['002004'],
+                  ['002003', '002006', '002010'], ['002008'], ['002002', '002009', '002011', '002012']]
     df = pd.DataFrame(columns=['url'])
-    for user_code in ['002001', '002012', '002013']:
+    for user_code in user_codes[server_num]:
         car_url_list = car_url_list + get_car_urls(user_code, num)
     car_url_list = list(set(car_url_list))
     print(len(car_url_list))
     df['url'] = car_url_list
-    df.to_csv('/home/ec2-user/daily_crawling/filtered_url_1.csv')
+    df.to_csv(
+        '/home/ec2-user/daily_crawling/filtered_url_{server_num}.csv'.format(server_num=server_num))
     print("총 실행시간", time.time()-s_time)
     ssh_manager = SSHManager()
     ssh_manager.create_ssh_client(
         "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
-    ssh_manager.send_file('/home/ec2-user/daily_crawling/filtered_url_1.csv',
-                          remote_path + 'filtered_url_1.csv')  # 파일전송
+    ssh_manager.send_file('/home/ec2-user/daily_crawling/filtered_url_{server_num}.csv'.format(server_num=server_num),
+                          remote_path + 'filtered_url_{server_num}.csv'.format(server_num=server_num))  # 파일전송
     ssh_manager.close_ssh_client()  # 세션종료
