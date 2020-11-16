@@ -1,14 +1,11 @@
 import paramiko
-import SCPClient
-import sys
-import multiprocessing
-from itertools import repeat
 import requests
 from bs4 import BeautifulSoup as bs
-from multiprocessing import Pool, freeze_support, Manager
 import pandas as pd
 import time
-import random
+from scp import SCPClient, SCPException
+local_path = '/home/ec2-user/daily_crawling/'
+remote_path = '/home/centos/result_from_servers/'
 
 
 def get_page_url(page_num, user_code, maker_code):
@@ -46,9 +43,9 @@ def get_car_urls(user_code, num):
             time.sleep(2)
             response = requests.get(url)
             soup = bs(response.text, "html.parser")
-            #####종료 조건 ###############
-            # if page_num == 3:
-            #     break
+            ####종료 조건 ###############
+            if page_num == 3:
+                break
             if soup.find('span', {'class': 'txt'}) is not None:
                 print('종료')
                 break
@@ -75,30 +72,58 @@ def get_car_urls(user_code, num):
     return car_url_list
 
 
-class Uploader:
+class SSHManager:
+    """
+    usage:
+        >>> import SSHManager
+        >>> ssh_manager = SSHManager()
+        >>> ssh_manager.create_ssh_client(hostname, username, password)
+        >>> ssh_manager.send_command("ls -al")
+        >>> ssh_manager.send_file("/path/to/local_path", "/path/to/remote_path")
+        >>> ssh_manager.get_file("/path/to/remote_path", "/path/to/local_path")
+        ...
+        >>> ssh_manager.close_ssh_client()
+    """
 
-    def __init__(self, resultFileName):
-        self.resultFileName = resultFileName
-        self.remotePath = '/home/centos/result_from_servers/'
-        self.main()
+    def __init__(self):
+        self.ssh_client = None
 
-    def main(self):
-        ssh = self.createSSHClient()
-        scp = SCPClient(ssh.get_transport())
-        scp.put(self.resultFileName,
-                self.remotePath+self.resultFileName)
-
-    def createSSHClient(self):
-        host = '133.186.153.56'  # IP
-        username = 'centos'  # username
-        password = 'gozjRjwu~!'  # password (root)
+    def create_ssh_client(self, hostname, username, password, key_filename):
+        """Create SSH client session to remote server"""
         port = 22
-        client = paramiko.SSHClient()
-        client.load_system_host_keys()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(host, port, username, password,
-                       key_filename='/home/ec2-user/daily_crawling/shopify.pem')  # public-key
-        return client
+        if self.ssh_client is None:
+            self.ssh_client = paramiko.SSHClient()
+            self.ssh_client.set_missing_host_key_policy(
+                paramiko.AutoAddPolicy())
+            self.ssh_client.connect(
+                hostname, port=port, username=username, password=password, key_filename=key_filename)
+        else:
+            print("SSH client session exist.")
+
+    def close_ssh_client(self):
+        """Close SSH client session"""
+        self.ssh_client.close()
+
+    def send_file(self, local_path, remote_path):
+        """Send a single file to remote path"""
+        try:
+            with SCPClient(self.ssh_client.get_transport()) as scp:
+                scp.put(local_path, remote_path, preserve_times=True)
+        except SCPException:
+            raise SCPException.message
+
+    def get_file(self, remote_path, local_path):
+        """Get a single file from remote path"""
+        try:
+            with SCPClient(self.ssh_client.get_transport()) as scp:
+                scp.get(remote_path, local_path)
+        except SCPException:
+            raise SCPException.message
+
+    def send_command(self, command):
+        """Send a single command"""
+        stdin, stdout, stderr = self.ssh_client.exec_command(command)
+        return stdout.readlines()
 
 
 if __name__ == '__main__':
@@ -106,10 +131,16 @@ if __name__ == '__main__':
     car_url_list = list()
     num = 0
     df = pd.DataFrame(columns=['url'])
-    for user_code in ['002001', '002002', '002003', '002004', '002005', '002006', '002007', '002008', '002009', '002010', '002011', '002012', '002013']:
+    for user_code in ['002004', '002005', '002006', '002007']:
         car_url_list = car_url_list + get_car_urls(user_code, num)
     car_url_list = list(set(car_url_list))
     print(len(car_url_list))
     df['url'] = car_url_list
-    df.to_csv('/home/ec2-user/daily_crawling/filtered_url_1.csv')
+    df.to_csv('/home/ec2-user/daily_crawling/filtered_url_4.csv')
     print("총 실행시간", time.time()-s_time)
+    ssh_manager = SSHManager()
+    ssh_manager.create_ssh_client(
+        "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
+    ssh_manager.send_file('/home/ec2-user/daily_crawling/filtered_url_1.csv',
+                          remote_path + 'filtered_url_1.csv')  # 파일전송
+    ssh_manager.close_ssh_client()  # 세션종료

@@ -7,9 +7,11 @@ from bs4 import BeautifulSoup as bs
 import requests
 import pandas as pd
 import paramiko
-from scp import SCPClient
 import time
 import random
+from scp import SCPClient, SCPException
+local_path = '/home/ec2-user/daily_crawling/'
+remote_path = '/home/centos/result_from_servers/'
 
 
 def get_car_info(url, temp):
@@ -428,7 +430,7 @@ def get_history(url, temp):
     return temp
 
 
-def start(urls, server_num):
+def start(urls):
     num = 0
     time.sleep(random.randint(1, 3))
     for url in urls:
@@ -462,7 +464,7 @@ def start(urls, server_num):
 
             print("현재 : ", num)
             if bool(temp):
-                with open('result{server_num}_t.json'.format(server_num=server_num), 'a', encoding='utf-8-sig') as outfile:
+                with open(local_path + 'result_t.json', 'a', encoding='utf-8-sig') as outfile:
                     json.dump(temp, outfile, indent=4,
                               ensure_ascii=False, sort_keys=True)
         except Exception as e:
@@ -752,6 +754,9 @@ def get_checkdata(url, temp):
 
 
 def get_dateform(date):
+    '''
+    input : 
+    '''
     y = date[3]
     m = date[2]
     d = date[1]
@@ -766,10 +771,14 @@ def get_dateform(date):
     return result
 
 
-def process_json(server_num):
-
+def process_json():
+    '''
+    input : X
+    output :  X
+    dict로 나열된 파일을 json array 형태로 변환 
+    '''
     result = list()
-    with open('result{server_num}_t.json'.format(server_num=server_num), encoding='utf-8-sig', errors='ignore') as f:
+    with open(local_path + 'result_t.json', encoding='utf-8-sig', errors='ignore') as f:
         str_data = f.read()
     str_data = str(str_data)
     str_data = str_data[:]
@@ -790,51 +799,148 @@ def process_json(server_num):
             print("Fail", num)
 
     print("총 json에 차량 개수 ", len(result))
-    os.remove('result{server_num}_t.json'.format(server_num=server_num))
-    with open('result{server_num}.json'.format(server_num=server_num), 'w', encoding='utf-8-sig') as ff:
+    os.remove(local_path+'result_t.json')
+    with open(local_path+'result.json', 'w', encoding='utf-8-sig') as ff:
         json.dump(result, ff, indent=4, ensure_ascii=False, sort_keys=True)
 
 
-class Uploader:
+class SSHManager:
+    """
+    usage:
+        >>> import SSHManager
+        >>> ssh_manager = SSHManager()
+        >>> ssh_manager.create_ssh_client(hostname, username, password)
+        >>> ssh_manager.send_command("ls -al")
+        >>> ssh_manager.send_file("/path/to/local_path", "/path/to/remote_path")
+        >>> ssh_manager.get_file("/path/to/remote_path", "/path/to/local_path")
+        ...
+        >>> ssh_manager.close_ssh_client()
+    """
 
-    def __init__(self, resultFileName):
-        self.resultFileName = resultFileName
-        self.remotePath = '/home/centos/result_from_servers/'
-        self.main()
+    def __init__(self):
+        self.ssh_client = None
 
-    def main(self):
-        ssh = self.createSSHClient()
-        scp = SCPClient(ssh.get_transport())
-        scp.put(self.resultFileName,
-                self.remotePath+self.resultFileName)
-
-    def createSSHClient(self):
-        host = '133.186.210.142'  # IP
-        username = 'centos'  # username
-        password = 'gozjRjwu~!'  # password (root)
+    def create_ssh_client(self, hostname, username, password, key_filename):
+        """Create SSH client session to remote server"""
         port = 22
-        client = paramiko.SSHClient()
-        client.load_system_host_keys()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(host, port, username, password,
-                       key_filename='/tmp/shopify.pem')  # public-key
-        return client
+        if self.ssh_client is None:
+            self.ssh_client = paramiko.SSHClient()
+            self.ssh_client.set_missing_host_key_policy(
+                paramiko.AutoAddPolicy())
+            self.ssh_client.connect(
+                hostname, port=port, username=username, password=password, key_filename=key_filename)
+        else:
+            print("SSH client session exist.")
+
+    def close_ssh_client(self):
+        """Close SSH client session"""
+        self.ssh_client.close()
+
+    def send_file(self, local_path, remote_path):
+        """Send a single file to remote path"""
+        try:
+            with SCPClient(self.ssh_client.get_transport()) as scp:
+                scp.put(local_path, remote_path, preserve_times=True)
+        except SCPException:
+            raise SCPException.message
+
+    def get_file(self, remote_path, local_path):
+        """Get a single file from remote path"""
+        try:
+            with SCPClient(self.ssh_client.get_transport()) as scp:
+                scp.get(remote_path, local_path)
+        except SCPException:
+            raise SCPException.message
+
+    def send_command(self, command):
+        """Send a single command"""
+        stdin, stdout, stderr = self.ssh_client.exec_command(command)
+        return stdout.readlines()
 
 
-#########################main#################################
-# with open('argu.txt', 'r') as f:
-#     server_num = f.read()
-server_num = sys.argv[1]
+def compare_car(p_car_urls, r_car_urls):
+    '''
+    input : url///price list 어제 수집한 데이터 와 오늘 수집한 데이터
+    output : 두 list 를 비교하여 신규등록 차량 리스트와 판매완료 차량 리스트 반환 
+    '''
+    new_car_urls = set(r_car_urls) - set(p_car_urls)
+    sold_car_urls = set(p_car_urls) - set(r_car_urls)
+    return new_car_urls, sold_car_urls
 
-num_per_url = 2800
 
-df = pd.read_csv('filtered_url.csv')
-car_urls = list(df['url'].values)
-server_num = int(server_num)
-car_urls = car_urls[1300+num_per_url*(server_num-1):num_per_url*server_num]
+def split_car(url_price):
+    '''
+    input : url///price 으로 된 str list
+    ouput : url 과 price를 split ,price list 와 url list로  반환
+    '''
+    price = list()
+    url = list()
+    for item in url_price:
+        try:
+            price.append(item.split('///')[1])
+        except:
+            pass
+        url.append(item.split('///')[0])
+    return url, price
 
-print(len(car_urls))
-start(car_urls, server_num)
-# Uploader(
-#     '/tmp/result{server_num}_t.json'.format(server_num=server_num))
-# process_json(server_num)
+
+ssh_manager = SSHManager()
+ssh_manager.create_ssh_client(
+    "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
+'''
+>>> data load
+'''
+ssh_manager.get_file(remote_path + 'filtered_url_1.csv',
+                     local_path + 'filtered_url_1.csv')  # 파일다운로드
+ssh_manager.get_file(remote_path + 'filtered_url_2.csv',
+                     local_path + 'filtered_url_2.csv')  # 파일다운로드
+ssh_manager.get_file(remote_path + 'filtered_url_3.csv',
+                     local_path + 'filtered_url_3.csv')  # 파일다운로드
+ssh_manager.get_file(remote_path + 'filtered_url_4.csv',
+                     local_path + 'filtered_url_4.csv')  # 파일다운로드
+r_df_1 = pd.read_csv(local_path + 'filtered_url_1.csv')
+r_df_2 = pd.read_csv(local_path + 'filtered_url_2.csv')
+r_df_3 = pd.read_csv(local_path + 'filtered_url_3.csv')
+r_df_4 = pd.read_csv(local_path + 'filtered_url_4.csv')
+p_df = pd.read_csv(local_path + 'filtered_url.csv')
+r_car_urls = list(r_df_1['url']) + list(r_df_2['url']) + \
+    list(r_df_3['url']) + list(r_df_4['url'])
+p_car_urls = list(p_df['url'])
+os.remove(local_path + 'filtered_url_1.csv')
+os.remove(local_path + 'filtered_url_2.csv')
+os.remove(local_path + 'filtered_url_3.csv')
+os.remove(local_path + 'filtered_url_4.csv')
+'''
+>>> 새로운 데이터 갱신
+'''
+r_df = pd.DataFrame(data=r_car_urls, columns=['url'])
+r_df.to_csv(local_path + 'filtered_url.csv')
+'''
+>>>url,price 비교 후 신차,판완차 저장
+'''
+new_car, sold_car = compare_car(p_car_urls, r_car_urls)
+print(len(new_car))
+print(len(sold_car))
+new_url, new_price = split_car(new_car)
+sold_url, sold_price = split_car(sold_car)
+'''
+>>> 판매 완료된 차량 저장
+'''
+sold_dict = {
+    "url": sold_url,
+    # "price": sold_price
+}
+s_df = pd.DataFrame(sold_dict)
+s_df.to_csv(local_path + 'sold_car.csv', encoding='euc-kr')
+'''
+>>>신규 등록차량 차량 정보 수집
+'''
+
+start(new_url)
+process_json()
+
+ssh_manager.send_file(local_path + 'result.json',
+                      remote_path + 'result.json')  # 파일전송
+ssh_manager.send_file(local_path + 'sold_car.csv',
+                      remote_path + 'sold_car.csv')  # 파일전송
+ssh_manager.close_ssh_client()  # 세션종료
