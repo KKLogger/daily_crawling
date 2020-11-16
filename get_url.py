@@ -128,14 +128,14 @@ class SSHManager:
 
 
 if __name__ == '__main__':
-    server_num = int(sys.argv[1]) + 1
+    server_num = int(sys.argv[1])
     s_time = time.time()
     car_url_list = list()
     num = 0
     user_codes = [['002001', '002007'], ['002005'], ['002004'],
                   ['002003', '002006', '002010'], ['002008'], ['002002', '002009', '002011', '002012']]
     df = pd.DataFrame(columns=['url'])
-    for user_code in user_codes[server_num]:
+    for user_code in user_codes[server_num-1]:
         car_url_list = car_url_list + get_car_urls(user_code, num)
     car_url_list = list(set(car_url_list))
     print(len(car_url_list))
