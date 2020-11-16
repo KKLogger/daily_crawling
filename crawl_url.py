@@ -18,6 +18,7 @@ def get_page_url(page_num, user_code, maker_code):
 
 
 def get_car_urls(user_code):
+    num = 0
     car_url_list = list()
     maker_codes = ['101', '102', '103', '105',
                    '104', '189', '106', '107',
@@ -59,6 +60,8 @@ def get_car_urls(user_code):
                 for item in items:
                     if 'detail.kbc?carSeq' in item['href']:
                         item_href = item['href']
+                        num += 1
+                        print(num)
                         price = car.find(
                             'strong', {'class', 'pay'}).text.strip()
                         if 'https://' in item_href:
