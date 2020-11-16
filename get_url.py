@@ -17,7 +17,7 @@ def get_page_url(page_num, user_code, maker_code):
     return url
 
 
-def get_car_urls(user_code, num):
+def get_car_urls(user_code):
 
     car_url_list = list()
     maker_codes = ['101', '102', '103', '105',
@@ -41,12 +41,12 @@ def get_car_urls(user_code, num):
         while(True):
             page_num += 1
             url = get_page_url(page_num, user_code, maker_code)
-            time.sleep(2)
+            time.sleep(1)
             response = requests.get(url)
             soup = bs(response.text, "html.parser")
             ####종료 조건 ###############
-            if page_num == 3:
-                break
+            # if page_num == 3:
+            #     break
             if soup.find('span', {'class': 'txt'}) is not None:
                 print('종료')
                 break
@@ -59,8 +59,6 @@ def get_car_urls(user_code, num):
                 items = car.find_all('a')
                 for item in items:
                     if 'detail.kbc?carSeq' in item['href']:
-                        num += 1
-                        print(num)
                         item_href = item['href']
                         price = car.find(
                             'strong', {'class', 'pay'}).text.strip()
@@ -131,12 +129,12 @@ if __name__ == '__main__':
     server_num = int(sys.argv[1])
     s_time = time.time()
     car_url_list = list()
-    num = 0
     user_codes = [['002001', '002007'], ['002005'], ['002004'],
                   ['002003', '002006', '002010'], ['002008'], ['002002', '002009', '002011', '002012']]
     df = pd.DataFrame(columns=['url'])
     for user_code in user_codes[server_num-1]:
-        car_url_list = car_url_list + get_car_urls(user_code, num)
+        car_url_list = car_url_list + get_car_urls(user_code)
+        print(len(car_url_list))
     car_url_list = list(set(car_url_list))
     print(len(car_url_list))
     df['url'] = car_url_list
