@@ -39,7 +39,6 @@ def get_car_urls(user_code):
         print(maker_code)
         page_num = 0
         while(True):
-            time.sleep(2)
             page_num += 1
             url = get_page_url(page_num, user_code, maker_code)
             response = requests.get(url)
