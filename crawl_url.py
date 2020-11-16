@@ -17,8 +17,8 @@ def get_page_url(page_num, user_code, maker_code):
     return url
 
 
-def get_car_urls(user_code):
-    num = 0
+def get_car_urls(user_code, num):
+
     car_url_list = list()
     maker_codes = ['101', '102', '103', '105',
                    '104', '189', '106', '107',
@@ -75,9 +75,10 @@ def get_car_urls(user_code):
 if __name__ == '__main__':
     s_time = time.time()
     car_url_list = list()
+    num = 0
     df = pd.DataFrame(columns=['url'])
     for user_code in ['002001', '002002', '002003', '002004', '002005', '002006', '002007', '002008', '002009', '002010', '002011', '002012', '002013']:
-        car_url_list = car_url_list + get_car_urls(user_code)
+        car_url_list = car_url_list + get_car_urls(user_code, num)
     car_url_list = list(set(car_url_list))
     print(len(car_url_list))
     df['url'] = car_url_list
