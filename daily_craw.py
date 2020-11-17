@@ -430,9 +430,9 @@ def get_history(url, temp):
     return temp
 
 
-def start(urls):
+def start(urls, server_num):
     num = 0
-    time.sleep(random.randint(1, 3))
+    time.sleep(random.randint(3, 5))
     for url in urls:
 
         temp = dict()
@@ -464,7 +464,7 @@ def start(urls):
 
             print("현재 : ", num)
             if bool(temp):
-                with open(local_path + 'result_t.json', 'a', encoding='utf-8-sig') as outfile:
+                with open(local_path + 'result{server_num}_t.json'.format(server_num=server_num), 'a', encoding='utf-8-sig') as outfile:
                     json.dump(temp, outfile, indent=4,
                               ensure_ascii=False, sort_keys=True)
         except Exception as e:
@@ -884,6 +884,10 @@ def split_car(url_price):
     return url, price
 
 
+'''
+>>> main
+'''
+server_num = int(sys.argv[1])
 ssh_manager = SSHManager()
 ssh_manager.create_ssh_client(
     "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
@@ -935,23 +939,33 @@ sold_url, sold_price = split_car(sold_car)
 '''
 >>> 판매 완료된 차량 저장
 '''
-sold_dict = {
-    "url": sold_url,
-    # "price": sold_price
-}
-s_df = pd.DataFrame(sold_dict)
-s_df.to_csv(local_path + 'sold_car.csv', encoding='euc-kr')
+if server_num == 30:
+    sold_dict = {
+        "url": sold_url,
+        "price": sold_price
+    }
+    s_df = pd.DataFrame(sold_dict)
+    s_df.to_csv(local_path +
+                'sold_car.csv', encoding='euc-kr')
+    ssh_manager.send_file(local_path + 'sold_car.csv',
+                          remote_path + 'sold_car.csv')  # 파일전송
+    os.remove(local_path + 'sold_car.csv')
 '''
->>>신규 등록차량 차량 정보 수집
+>>>신규 등록차량 차량 정보 수집 !!!서버에 분배 
 '''
 
-start(new_url)
-process_json()
+per_num = len(new_url)//29
+if server_num * per_num > len(new_url):
+    new_url = new_url[per_num*(server_num-1):]
+else:
+    new_url = new_url[per_num*(server_num-1):per_num*(server_num)]
+start(new_url, server_num)
+# process_json()
 
-ssh_manager.send_file(local_path + 'result.json',
-                      remote_path + 'result.json')  # 파일전송
-ssh_manager.send_file(local_path + 'sold_car.csv',
-                      remote_path + 'sold_car.csv')  # 파일전송
-os.remove(local_path + 'result.json')
-os.remove(local_path + 'sold_car.csv')
+ssh_manager.send_file(local_path + 'result{server_num}_t.json'.format(server_num=server_num),
+                      remote_path + 'result{server_num}_t.json'.format(server_num=server_num))  # 파일전송
+
+os.remove(
+    local_path + 'result{server_num}_t.json'.format(server_num=server_num))
+
 ssh_manager.close_ssh_client()  # 세션종료
