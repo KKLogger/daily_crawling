@@ -851,9 +851,24 @@ class SSHManager:
         return stdout.readlines()
 
 
+def split_car(url_price):
+    '''
+    input : url///price 으로 된 str list
+    ouput : url 과 price를 split ,price list 와 url list로  반환
+    '''
+    price = list()
+    url = list()
+    for item in url_price:
+        try:
+            price.append(item.split('///')[1])
+        except:
+            pass
+        url.append(item.split('///')[0])
+    return url, price
+
 #########################main#################################
-# with open('argu.txt', 'r') as f:
-#     server_num = f.read()
+
+
 server_num = sys.argv[1]
 ssh_manager = SSHManager()
 ssh_manager.create_ssh_client(
@@ -891,6 +906,7 @@ os.remove(local_path + 'filtered_url_6.csv')
 
 df = pd.read_csv('filtered_url.csv')
 car_urls = list(df['url'].values)
+car_urls, temp = split_car(car_urls)
 num_per_url = len(car_urls)//62
 server_num = int(server_num)
 if server_num * num_per_url > len(car_urls):
