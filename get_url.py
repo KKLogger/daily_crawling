@@ -147,5 +147,6 @@ if __name__ == '__main__':
         "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
     ssh_manager.send_file('/home/ec2-user/daily_crawling/filtered_url_{server_num}.csv'.format(server_num=server_num),
                           remote_path + 'filtered_url_{server_num}.csv'.format(server_num=server_num))  # 파일전송
-    os.remove('/home/ec2-user/daily_crawling/filtered_url_{server_num}.csv')
+    os.remove(
+        '/home/ec2-user/daily_crawling/filtered_url_{server_num}.csv'.format(server_num=server_num))
     ssh_manager.close_ssh_client()  # 세션종료
