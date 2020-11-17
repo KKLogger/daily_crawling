@@ -42,7 +42,7 @@ def get_car_urls(user_code):
         while(True):
             page_num += 1
             url = get_page_url(page_num, user_code, maker_code)
-            time.sleep(1)
+            time.sleep(0.3)
             response = requests.get(url)
             soup = bs(response.text, "html.parser")
             ####종료 조건 ###############
