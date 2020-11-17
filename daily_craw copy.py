@@ -1,14 +1,11 @@
-import pandas as pd
-from crawl_info import *
-from data_processing import *
-from SSHManager import SSHManager
-import time
-import random
-import json
+from to_server.my_func.crawl_info import *
+from to_server.my_func.data_processing import *
+from to_server.my_func.sshmanager import SSHManager
+
 
 local_path = '/home/ec2-user/daily_crawling/'
+# local_path = '/C:/Users/jlee/Desktop/test/'
 remote_path = '/home/centos/result_from_servers/'
-
 
 
 def start(urls, server_num, option_codes):
@@ -52,15 +49,18 @@ def start(urls, server_num, option_codes):
             print(f"error : {e}")
 
 
-
-#########################main#################################
 if __name__ == '__main__':
-
-    server_num = sys.argv[1]
+    '''
+    >>> main
+    '''
+    # server_num = int(sys.argv[1])
+    server_num = 30
     ssh_manager = SSHManager()
     ssh_manager.create_ssh_client(
         "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
-
+    '''
+    >>> data load
+    '''
     ssh_manager.get_file(remote_path + 'filtered_url_1.csv',
                          local_path + 'filtered_url_1.csv')  # 파일다운로드
     ssh_manager.get_file(remote_path + 'filtered_url_2.csv',
@@ -79,39 +79,54 @@ if __name__ == '__main__':
     r_df_4 = pd.read_csv(local_path + 'filtered_url_4.csv')
     r_df_5 = pd.read_csv(local_path + 'filtered_url_5.csv')
     r_df_6 = pd.read_csv(local_path + 'filtered_url_6.csv')
-
-    car_urls = list(r_df_1['url']) + list(r_df_2['url']) + \
+    p_df = pd.read_csv(local_path + 'filtered_url.csv')
+    r_car_urls = list(r_df_1['url']) + list(r_df_2['url']) + \
         list(r_df_3['url']) + list(r_df_4['url']) + \
         list(r_df_5['url']) + list(r_df_6['url'])
+    p_car_urls = list(p_df['url'])
     os.remove(local_path + 'filtered_url_1.csv')
     os.remove(local_path + 'filtered_url_2.csv')
     os.remove(local_path + 'filtered_url_3.csv')
     os.remove(local_path + 'filtered_url_4.csv')
     os.remove(local_path + 'filtered_url_5.csv')
     os.remove(local_path + 'filtered_url_6.csv')
+    '''
+    >>> 새로운 데이터 갱신
+    '''
+    r_df = pd.DataFrame(data=r_car_urls, columns=['url'])
+    r_df.to_csv(local_path + 'filtered_url.csv')
+    '''
+    >>>url,price 비교 후 신차,판완차 저장
+    '''
+    new_car, sold_car = compare_car(p_car_urls, r_car_urls)
+    print(len(new_car))
+    print(len(sold_car))
+    new_url, new_price = split_car(new_car)
+    sold_url, sold_price = split_car(sold_car)
+    '''
+    >>> 판매 완료된 차량 저장
+    '''
+    if server_num == 30:
+        sold_dict = {
+            "url": sold_url,
+            "price": sold_price
+        }
+        s_df = pd.DataFrame(sold_dict)
+        s_df.to_csv(local_path +
+                    'sold_car.csv', encoding='euc-kr')
+        ssh_manager.send_file(local_path + 'sold_car.csv',
+                              remote_path + 'sold_car.csv')  # 파일전송
+        os.remove(local_path + 'sold_car.csv')
+    '''
+    >>>신규 등록차량 차량 정보 수집 !!!서버에 분배 
+    '''
 
-    car_urls, temp = split_car(car_urls)
-    num_per_url = len(car_urls)//62
-
-    server_num = int(server_num)
-    start_idx = 0
-    if server_num * num_per_url > len(car_urls):
-        car_urls = car_urls[start_idx + num_per_url*(server_num-1):]
+    per_num = len(new_url)//29
+    if server_num * per_num > len(new_url):
+        new_url = new_url[per_num*(server_num-1):]
     else:
-        car_urls = car_urls[start_idx + num_per_url *
-                            (server_num-1):num_per_url*(server_num)]
-
-    print(len(car_urls))
-    while True:
-        idx = 0
-        try:
-            option_codes = get_optioncodes(car_urls[idx])
-            break
-        except:
-            print('option_codes error')
-            idx += 1
-
-    start(car_urls, server_num, option_codes)
+        new_url = new_url[per_num*(server_num-1):per_num*(server_num)]
+    start(new_url, server_num)
 
     ssh_manager.send_file(local_path + 'result{server_num}_t.json'.format(server_num=server_num),
                           remote_path + 'result{server_num}_t.json'.format(server_num=server_num))  # 파일전송

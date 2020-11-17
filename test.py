@@ -1,77 +1,58 @@
-import os
-import sys
-from ast import literal_eval
-import json
-import requests
-from bs4 import BeautifulSoup as bs
-import requests
 import pandas as pd
-import paramiko
+from crawl_info import *
+from data_processing import *
+from SSHManager import SSHManager
 import time
 import random
-from scp import SCPClient, SCPException
+import json
 
 local_path = 'C:/Users/jlee/Desktop/test/'
-remote_path = '/home/centos/result_from_servers/'
 
+def start(urls, server_num, option_codes):
+    num = 0
 
-class SSHManager:
-    """
-    usage:
-        >>> import SSHManager
-        >>> ssh_manager = SSHManager()
-        >>> ssh_manager.create_ssh_client(hostname, username, password)
-        >>> ssh_manager.send_command("ls -al")
-        >>> ssh_manager.send_file("/path/to/local_path", "/path/to/remote_path")
-        >>> ssh_manager.get_file("/path/to/remote_path", "/path/to/local_path")
-        ...
-        >>> ssh_manager.close_ssh_client()
-    """
+    for url in urls:
 
-    def __init__(self):
-        self.ssh_client = None
-
-    def create_ssh_client(self, hostname, username, password, key_filename):
-        """Create SSH client session to remote server"""
-        port = 22
-        if self.ssh_client is None:
-            self.ssh_client = paramiko.SSHClient()
-            self.ssh_client.set_missing_host_key_policy(
-                paramiko.AutoAddPolicy())
-            self.ssh_client.connect(
-                hostname, port=port, username=username, password=password, key_filename=key_filename)
-        else:
-            print("SSH client session exist.")
-
-    def close_ssh_client(self):
-        """Close SSH client session"""
-        self.ssh_client.close()
-
-    def send_file(self, local_path, remote_path):
-        """Send a single file to remote path"""
+        temp = dict()
+        # try:
+        #     temp = get_car_info(
+        #         url, temp)
+        # except:
+        #     print("error in car info")
+        # try:
+        #     temp.update(get_history(
+        #         url, temp))
+        # except:
+        #     print("error in car history")
+        # try:
+        #     temp['Options'] = get_options(
+        #         url)
+        # except:
+        #     print("error in car options")
+        # try:
+        #     temp = get_checkdata(url, temp)
+        # except:
+        #     print("error in car checkdata")
         try:
-            with SCPClient(self.ssh_client.get_transport()) as scp:
-                scp.put(local_path, remote_path, preserve_times=True)
-        except SCPException:
-            raise SCPException.message
+            temp, carHistorySeq, chk_tag_url = get_car_info(url, temp)
+            temp.update(get_history(url, temp, carHistorySeq))
+            temp['Options'] = get_options(url, option_codes)
+            temp = get_checkdata(url, temp, chk_tag_url)
+            num += 1
 
-    def get_file(self, remote_path, local_path):
-        """Get a single file from remote path"""
-        try:
-            with SCPClient(self.ssh_client.get_transport()) as scp:
-                scp.get(remote_path, local_path)
-        except SCPException:
-            raise SCPException.message
-
-    def send_command(self, command):
-        """Send a single command"""
-        stdin, stdout, stderr = self.ssh_client.exec_command(command)
-        return stdout.readlines()
+            print("현재 : ", num)
+            if bool(temp):
+                with open(local_path + 'result{server_num}_t.json'.format(server_num=server_num), 'a', encoding='utf-8-sig') as outfile:
+                    json.dump(temp, outfile, indent=4,
+                              ensure_ascii=False, sort_keys=True)
+        except Exception as e:
+            print(f"error : {e}")
 
 
-ssh_manager = SSHManager()
-ssh_manager.create_ssh_client(
-    "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
-ssh_manager.send_file(local_path+'asd.txt.txt', remote_path+"1.txt")  # 파일전송
-ssh_manager.get_file(remote_path+"1.txt", local_path+'2.txt')  # 파일다운로드
-ssh_manager.close_ssh_client()  # 세션종료
+if __name__ == '__main__':
+    df = pd.read_csv(local_path+'filtered_url.csv')
+    urls = df['url']
+    urls, _ = split_car(urls)
+    option_codes = get_optioncodes(urls[0])
+    print(len(urls))
+    start(urls,1,option_codes)

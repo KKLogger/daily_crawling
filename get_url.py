@@ -1,12 +1,12 @@
 import sys
-import paramiko
 import requests
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 import time
-from scp import SCPClient, SCPException
+from SSHManager import SSHManager
 import os
 local_path = '/home/ec2-user/daily_crawling/'
+
 remote_path = '/home/centos/result_from_servers/'
 
 
@@ -72,60 +72,6 @@ def get_car_urls(user_code):
     return car_url_list
 
 
-class SSHManager:
-    """
-    usage:
-        >>> import SSHManager
-        >>> ssh_manager = SSHManager()
-        >>> ssh_manager.create_ssh_client(hostname, username, password)
-        >>> ssh_manager.send_command("ls -al")
-        >>> ssh_manager.send_file("/path/to/local_path", "/path/to/remote_path")
-        >>> ssh_manager.get_file("/path/to/remote_path", "/path/to/local_path")
-        ...
-        >>> ssh_manager.close_ssh_client()
-    """
-
-    def __init__(self):
-        self.ssh_client = None
-
-    def create_ssh_client(self, hostname, username, password, key_filename):
-        """Create SSH client session to remote server"""
-        port = 22
-        if self.ssh_client is None:
-            self.ssh_client = paramiko.SSHClient()
-            self.ssh_client.set_missing_host_key_policy(
-                paramiko.AutoAddPolicy())
-            self.ssh_client.connect(
-                hostname, port=port, username=username, password=password, key_filename=key_filename)
-        else:
-            print("SSH client session exist.")
-
-    def close_ssh_client(self):
-        """Close SSH client session"""
-        self.ssh_client.close()
-
-    def send_file(self, local_path, remote_path):
-        """Send a single file to remote path"""
-        try:
-            with SCPClient(self.ssh_client.get_transport()) as scp:
-                scp.put(local_path, remote_path, preserve_times=True)
-        except SCPException:
-            raise SCPException.message
-
-    def get_file(self, remote_path, local_path):
-        """Get a single file from remote path"""
-        try:
-            with SCPClient(self.ssh_client.get_transport()) as scp:
-                scp.get(remote_path, local_path)
-        except SCPException:
-            raise SCPException.message
-
-    def send_command(self, command):
-        """Send a single command"""
-        stdin, stdout, stderr = self.ssh_client.exec_command(command)
-        return stdout.readlines()
-
-
 if __name__ == '__main__':
     server_num = int(sys.argv[1])
     s_time = time.time()
@@ -140,13 +86,13 @@ if __name__ == '__main__':
     print(len(car_url_list))
     df['url'] = car_url_list
     df.to_csv(
-        '/home/ec2-user/daily_crawling/filtered_url_{server_num}.csv'.format(server_num=server_num))
+        local_path+'filtered_url_{server_num}.csv'.format(server_num=server_num))
     print("총 실행시간", time.time()-s_time)
     ssh_manager = SSHManager()
     ssh_manager.create_ssh_client(
         "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
-    ssh_manager.send_file('/home/ec2-user/daily_crawling/filtered_url_{server_num}.csv'.format(server_num=server_num),
+    ssh_manager.send_file(local_path+'filtered_url_{server_num}.csv'.format(server_num=server_num),
                           remote_path + 'filtered_url_{server_num}.csv'.format(server_num=server_num))  # 파일전송
     os.remove(
-        '/home/ec2-user/daily_crawling/filtered_url_{server_num}.csv'.format(server_num=server_num))
+        local_path+'filtered_url_{server_num}.csv'.format(server_num=server_num))
     ssh_manager.close_ssh_client()  # 세션종료
