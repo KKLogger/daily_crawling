@@ -432,7 +432,7 @@ def get_history(url, temp):
 
 def start(urls, server_num):
     num = 0
-    time.sleep(random.randint(3, 5))
+    time.sleep(random.randint(5, 8))
     for url in urls:
 
         temp = dict()
@@ -906,10 +906,12 @@ os.remove(local_path + 'filtered_url_6.csv')
 car_urls, temp = split_car(car_urls)
 num_per_url = len(car_urls)//62
 server_num = int(server_num)
+start_idx = 500
 if server_num * num_per_url > len(car_urls):
-    car_urls = car_urls[num_per_url*(server_num-1):]
+    car_urls = car_urls[start_idx + num_per_url*(server_num-1):]
 else:
-    car_urls = car_urls[num_per_url*(server_num-1):num_per_url*(server_num)]
+    car_urls = car_urls[start_idx + num_per_url *
+                        (server_num-1):num_per_url*(server_num)]
 
 print(len(car_urls))
 start(car_urls, server_num)
