@@ -33,7 +33,7 @@ if options == 1:
     with open(local_path+'result_{date}_{len}건.json'.format(date=datetime.today(), len=len(result)), 'w', encoding='utf-8-sig') as ff:
         json.dump(result, ff, indent=4, ensure_ascii=False, sort_keys=True)
 else:
-    for server_num in range(1, 31):
+    for server_num in range(31, 64):
         with open(local_path + 'result{server_num}_t.json'.format(server_num=server_num), encoding='utf-8-sig', errors='ignore') as f:
             str_data = f.read()
         str_data = str(str_data)
