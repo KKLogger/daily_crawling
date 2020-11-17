@@ -903,9 +903,6 @@ os.remove(local_path + 'filtered_url_4.csv')
 os.remove(local_path + 'filtered_url_5.csv')
 os.remove(local_path + 'filtered_url_6.csv')
 
-
-df = pd.read_csv('filtered_url.csv')
-car_urls = list(df['url'].values)
 car_urls, temp = split_car(car_urls)
 num_per_url = len(car_urls)//62
 server_num = int(server_num)
