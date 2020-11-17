@@ -906,7 +906,7 @@ os.remove(local_path + 'filtered_url_6.csv')
 car_urls, temp = split_car(car_urls)
 num_per_url = len(car_urls)//62
 server_num = int(server_num)
-start_idx = 710
+start_idx = 760
 if server_num * num_per_url > len(car_urls):
     car_urls = car_urls[start_idx + num_per_url*(server_num-1):]
 else:
