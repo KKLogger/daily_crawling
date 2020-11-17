@@ -1,3 +1,4 @@
+from selenium import webdriver
 import os
 import sys
 from ast import literal_eval
@@ -10,11 +11,13 @@ import paramiko
 from scp import SCPClient, SCPException
 import time
 import random
-local_path = '/home/ec2-user/daily_crawling/'
+
+
+local_path = 'C:/Users/jlee/Desktop/test/'
 remote_path = '/home/centos/result_from_servers/'
 
 
-def get_car_info(url, temp):
+def get_car_info(url, temp, driver):
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -30,11 +33,12 @@ def get_car_info(url, temp):
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
     }
-    response = requests.get(url, headers=headers)
-    soup = bs(response.text, 'html.parser')
+    # response = requests.get(url, headers=headers)
+    text = driver.get(url)
+    soup = bs(text, 'html.parser')
     # if soup.find('h2') is None:
     #     raise Exception("blocked")
-    Cookie = response.cookies.get('cha-cid')
+    Cookie = driver.manage().getCookieNamed('cha-cid')
     Cookie = "cha-cid=" + Cookie + ";"
     carSeq = url[url.index('?carSeq=')+len('?carSeq='):]
     json_url = 'https://www.kbchachacha.com/public/car/common/recent/car/list.json'
@@ -205,7 +209,7 @@ def get_car_info(url, temp):
     return result
 
 
-def get_options(url):
+def get_options(url, driver):
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -301,7 +305,7 @@ def df_to_dict(df):
     return result
 
 
-def get_history(url, temp):
+def get_history(url, temp, driver):
 
     response = requests.get(url)
     soup = bs(response.text, 'html.parser')
@@ -431,6 +435,8 @@ def get_history(url, temp):
 
 
 def start(urls, server_num):
+    driver = webdriver.Chrome(
+        'C:/Users/jlee/Crawling-Car-Info/Crawling/carInfo/carInfo/chromedriver.exe')
     num = 0
     time.sleep(random.randint(1, 5))
     for url in urls:
@@ -456,10 +462,10 @@ def start(urls, server_num):
         # except:
         #     print("error in car checkdata")
         try:
-            temp = get_car_info(url, temp)
-            temp.update(get_history(url, temp))
-            temp['Options'] = get_options(url)
-            temp = get_checkdata(url, temp)
+            temp = get_car_info(url, temp, driver)
+            temp.update(get_history(url, temp, driver))
+            temp['Options'] = get_options(url, driver)
+            temp = get_checkdata(url, temp, driver)
             num += 1
 
             print("현재 : ", num)
@@ -692,7 +698,7 @@ def crawl_iframe(url, temp):
     return temp
 
 
-def get_checkdata(url, temp):
+def get_checkdata(url, temp, driver):
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -870,63 +876,3 @@ def split_car(url_price):
             pass
         url.append(item.split('///')[0])
     return url, price
-
-#########################main#################################
-
-
-server_num = sys.argv[1]
-ssh_manager = SSHManager()
-ssh_manager.create_ssh_client(
-    "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
-
-ssh_manager.get_file(remote_path + 'filtered_url_1.csv',
-                     local_path + 'filtered_url_1.csv')  # 파일다운로드
-ssh_manager.get_file(remote_path + 'filtered_url_2.csv',
-                     local_path + 'filtered_url_2.csv')  # 파일다운로드
-ssh_manager.get_file(remote_path + 'filtered_url_3.csv',
-                     local_path + 'filtered_url_3.csv')  # 파일다운로드
-ssh_manager.get_file(remote_path + 'filtered_url_4.csv',
-                     local_path + 'filtered_url_4.csv')  # 파일다운로드
-ssh_manager.get_file(remote_path + 'filtered_url_5.csv',
-                     local_path + 'filtered_url_5.csv')  # 파일다운로드
-ssh_manager.get_file(remote_path + 'filtered_url_6.csv',
-                     local_path + 'filtered_url_6.csv')  # 파일다운로드
-r_df_1 = pd.read_csv(local_path + 'filtered_url_1.csv')
-r_df_2 = pd.read_csv(local_path + 'filtered_url_2.csv')
-r_df_3 = pd.read_csv(local_path + 'filtered_url_3.csv')
-r_df_4 = pd.read_csv(local_path + 'filtered_url_4.csv')
-r_df_5 = pd.read_csv(local_path + 'filtered_url_5.csv')
-r_df_6 = pd.read_csv(local_path + 'filtered_url_6.csv')
-
-car_urls = list(r_df_1['url']) + list(r_df_2['url']) + \
-    list(r_df_3['url']) + list(r_df_4['url']) + \
-    list(r_df_5['url']) + list(r_df_6['url'])
-os.remove(local_path + 'filtered_url_1.csv')
-os.remove(local_path + 'filtered_url_2.csv')
-os.remove(local_path + 'filtered_url_3.csv')
-os.remove(local_path + 'filtered_url_4.csv')
-os.remove(local_path + 'filtered_url_5.csv')
-os.remove(local_path + 'filtered_url_6.csv')
-
-car_urls, temp = split_car(car_urls)
-num_per_url = len(car_urls)//62
-
-server_num = int(server_num)
-start_idx = 190
-if server_num * num_per_url > len(car_urls):
-    car_urls = car_urls[start_idx + num_per_url*(server_num-1):]
-else:
-    car_urls = car_urls[start_idx + num_per_url *
-                        (server_num-1):num_per_url*(server_num)]
-
-print(len(car_urls))
-start(car_urls, server_num)
-
-
-ssh_manager.send_file(local_path + 'result{server_num}_t.json'.format(server_num=server_num),
-                      remote_path + 'result{server_num}_t.json'.format(server_num=server_num))  # 파일전송
-
-os.remove(
-    local_path + 'result{server_num}_t.json'.format(server_num=server_num))
-
-ssh_manager.close_ssh_client()  # 세션종료

@@ -10,7 +10,7 @@ import paramiko
 import time
 import random
 from scp import SCPClient, SCPException
-local_path = '/home/ec2-user/daily_crawling/'
+local_path = 'C:/Users/jlee/Desktop/test/'
 remote_path = '/home/centos/result_from_servers/'
 
 
@@ -432,7 +432,7 @@ def get_history(url, temp):
 
 def start(urls, server_num):
     num = 0
-    time.sleep(random.randint(3, 5))
+    time.sleep(random.randint(1, 5))
     for url in urls:
 
         temp = dict()
@@ -863,6 +863,8 @@ def compare_car(p_car_urls, r_car_urls):
     input : url///price list 어제 수집한 데이터 와 오늘 수집한 데이터
     output : 두 list 를 비교하여 신규등록 차량 리스트와 판매완료 차량 리스트 반환 
     '''
+    chage_car_urls = (set(r_car_urls) - set(p_car_urls)
+                      ) & (set(r_car_urls) - set(p_car_urls))
     new_car_urls = set(r_car_urls) - set(p_car_urls)
     sold_car_urls = set(p_car_urls) - set(r_car_urls)
     return new_car_urls, sold_car_urls

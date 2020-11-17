@@ -32,6 +32,12 @@ def get_car_info(url, temp):
     }
     response = requests.get(url, headers=headers)
     soup = bs(response.text, 'html.parser')
+    soup_t = str(soup)
+    str_len = len('carHistorySeq = "')
+    carHistorySeq = soup_t[soup_t.index(
+        'carHistorySeq = "')+str_len:soup_t.index('"', soup_t.index('carHistorySeq = "')+str_len)]
+    chk_tag_url = soup.find('li', {'class': 'used01'}).find('a')[
+        'data-link-url']
     # if soup.find('h2') is None:
     #     raise Exception("blocked")
     Cookie = response.cookies.get('cha-cid')
@@ -202,41 +208,11 @@ def get_car_info(url, temp):
     # NoTax
 
     result = temp
-    return result
+    return result, carHistorySeq, chk_tag_url
 
 
-def get_options(url):
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Content-Length': '42',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Host': 'www.kbchachacha.com',
-        'Origin': 'https://www.kbchachacha.com',
-        'Pragma': 'no-cache',
-        'Sec-Fetch-Dest': 'iframe',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
-    }
-    jump = len('?carSeq=')
-    result = dict()
-    index = url.index('?carSeq=') + jump
-    carSeq = url[index:]
-    data = {
-        'layerId': 'layerCarOptionView',
-        'carSeq': carSeq
-    }
-    res = requests.post(
-        'https://www.kbchachacha.com/public/layer/car/option/list.kbc', headers=headers, data=data)
-    soup = bs(res.text, 'html.parser')
-    option_codes = soup.find('input', {'id': 'carOption'})[
-        'value'].split(',')
+def get_options(url, option_codes):
+
     res = requests.post(
         'https://www.kbchachacha.com/public/car/option/code/list.json')
     json_datas = json.loads(res.text)
@@ -301,14 +277,7 @@ def df_to_dict(df):
     return result
 
 
-def get_history(url, temp):
-
-    response = requests.get(url)
-    soup = bs(response.text, 'html.parser')
-    soup = str(soup)
-    str_len = len('carHistorySeq = "')
-    carHistorySeq = soup[soup.index(
-        'carHistorySeq = "')+str_len:soup.index('"', soup.index('carHistorySeq = "')+str_len)]
+def get_history(url, temp, carHistorySeq):
 
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -430,7 +399,7 @@ def get_history(url, temp):
     return temp
 
 
-def start(urls, server_num):
+def start(urls, server_num, option_codes):
     num = 0
     time.sleep(random.randint(1, 5))
     for url in urls:
@@ -456,10 +425,10 @@ def start(urls, server_num):
         # except:
         #     print("error in car checkdata")
         try:
-            temp = get_car_info(url, temp)
-            temp.update(get_history(url, temp))
-            temp['Options'] = get_options(url)
-            temp = get_checkdata(url, temp)
+            temp, carHistorySeq, chk_tag_url = get_car_info(url, temp)
+            temp.update(get_history(url, temp, carHistorySeq))
+            temp['Options'] = get_options(url, option_codes)
+            temp = get_checkdata(url, temp, chk_tag_url)
             num += 1
 
             print("현재 : ", num)
@@ -471,17 +440,7 @@ def start(urls, server_num):
             print(f"error : {e}")
 
 
-def crawl_iframe(url, temp):
-
-    carSeq = url[url.index('?carSeq=') + len('?carSeq='):]
-    data = {
-        'layerId': 'layerCarCheckInfo',
-        'carSeq': carSeq
-    }
-    res = requests.post(
-        'https://www.kbchachacha.com/public/layer/car/check/info.kbc', data=data)
-    soup = bs(res.text, 'html.parser')
-
+def crawl_iframe(url, temp, soup):
     table = soup.find_all('table')
     temp['RegistrationID'] = table[0].find_all('tr')[5].find('td').text
     if temp['RegistrationID'] == '':
@@ -692,28 +651,7 @@ def crawl_iframe(url, temp):
     return temp
 
 
-def get_checkdata(url, temp):
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Host': 'www.kbchachacha.com',
-        'Pragma': 'no-cache',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
-    }
-    res = requests.get(
-        url, headers=headers)
-
-    soup = bs(res.text, 'html.parser')
-    chk_tag_url = soup.find('li', {'class': 'used01'}).find('a')[
-        'data-link-url']
+def get_checkdata(url, temp, chk_tag_url):
     if 'http' in chk_tag_url:  # 다른 페이지로 이동
         # call domain by scraper
         temp['CHECK_INNER'] = "null"
@@ -740,7 +678,7 @@ def get_checkdata(url, temp):
                 temp['IssueDt'] = 'null'
             else:
                 # call iframe scraper
-                temp = crawl_iframe(url, temp)
+                temp = crawl_iframe(url, temp, soup)
 
         else:
             temp['CHECK_INNER'] = "null"
@@ -871,6 +809,39 @@ def split_car(url_price):
         url.append(item.split('///')[0])
     return url, price
 
+
+def get_optioncodes(url):
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Content-Length': '42',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Host': 'www.kbchachacha.com',
+        'Origin': 'https://www.kbchachacha.com',
+        'Pragma': 'no-cache',
+        'Sec-Fetch-Dest': 'iframe',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
+    }
+    jump = len('?carSeq=')
+    index = url.index('?carSeq=') + jump
+    carSeq = url[index:]
+    data = {
+        'layerId': 'layerCarOptionView',
+        'carSeq': carSeq
+    }
+    res = requests.post(
+        'https://www.kbchachacha.com/public/layer/car/option/list.kbc', headers=headers, data=data)
+    soup = bs(res.text, 'html.parser')
+    option_codes = soup.find('input', {'id': 'carOption'})[
+        'value'].split(',')
+    return option_codes
 #########################main#################################
 
 
@@ -912,7 +883,7 @@ car_urls, temp = split_car(car_urls)
 num_per_url = len(car_urls)//62
 
 server_num = int(server_num)
-start_idx = 190
+start_idx = 0
 if server_num * num_per_url > len(car_urls):
     car_urls = car_urls[start_idx + num_per_url*(server_num-1):]
 else:
@@ -920,7 +891,16 @@ else:
                         (server_num-1):num_per_url*(server_num)]
 
 print(len(car_urls))
-start(car_urls, server_num)
+while True:
+    idx = 0
+    try:
+        option_codes = get_optioncodes(car_urls[idx])
+        break
+    except:
+        print('option_codes error')
+        idx += 1
+
+start(car_urls, server_num, option_codes)
 
 
 ssh_manager.send_file(local_path + 'result{server_num}_t.json'.format(server_num=server_num),
