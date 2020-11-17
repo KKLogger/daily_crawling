@@ -754,6 +754,9 @@ def get_checkdata(url, temp):
 
 
 def get_dateform(date):
+    '''
+    날짜 데이터 형식 변환
+    '''
     y = date[3]
     m = date[2]
     d = date[1]
@@ -769,7 +772,9 @@ def get_dateform(date):
 
 
 def process_json(server_num):
-
+    '''
+    Not use
+    '''
     result = list()
     with open('result{server_num}_t.json'.format(server_num=server_num), encoding='utf-8-sig', errors='ignore') as f:
         str_data = f.read()
@@ -906,7 +911,7 @@ os.remove(local_path + 'filtered_url_6.csv')
 car_urls, temp = split_car(car_urls)
 num_per_url = len(car_urls)//62
 server_num = int(server_num)
-start_idx = 760
+start_idx = 190
 if server_num * num_per_url > len(car_urls):
     car_urls = car_urls[start_idx + num_per_url*(server_num-1):]
 else:

@@ -47,6 +47,7 @@ else:
         for str_data in str_datas:
             result.append(str_data)
 
-        # os.remove(local_path+'result_t.json')
+        os.remove(
+            local_path + 'result{server_num}_t.json'.format(server_num=server_num))
     with open(local_path+'result{options}_t.json'.format(options=options), 'w', encoding='utf-8-sig') as ff:
         json.dump(result, ff, indent=4, ensure_ascii=False, sort_keys=True)
