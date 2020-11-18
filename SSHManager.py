@@ -1,5 +1,5 @@
 from scp import SCPClient, SCPException
-
+import paramiko
 
 class SSHManager:
     """
