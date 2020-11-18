@@ -5,6 +5,7 @@ from SSHManager import SSHManager
 import time
 import random
 import json
+import sys
 
 local_path = '/home/ec2-user/daily_crawling/'
 remote_path = '/home/centos/result_from_servers/'
