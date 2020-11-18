@@ -7,10 +7,11 @@ import random
 import json
 import sys
 import os
+import datetime
 
 local_path = '/home/ec2-user/daily_crawling/'
 remote_path = '/home/centos/result_from_servers/'
-
+day = datetime.datetime.today().strftime('%Y%m%d')
 
 
 def start(urls, server_num, option_codes):
@@ -47,7 +48,7 @@ def start(urls, server_num, option_codes):
 
             print("현재 : ", num)
             if bool(temp):
-                with open(local_path + 'result{server_num}_t.json'.format(server_num=server_num), 'a', encoding='utf-8-sig') as outfile:
+                with open(local_path + 'result{server_num},{day}_t.json'.format(server_num=server_num,day=day), 'a', encoding='utf-8-sig') as outfile:
                     json.dump(temp, outfile, indent=4,
                               ensure_ascii=False, sort_keys=True)
         except Exception as e:
@@ -102,7 +103,6 @@ if __name__ == '__main__':
     else:
         car_urls = car_urls[start_idx + num_per_url *
                             (server_num-1):num_per_url*(server_num)]
-
     print(len(car_urls))
     while True:
         idx = 0
@@ -115,10 +115,10 @@ if __name__ == '__main__':
 
     start(car_urls, server_num, option_codes)
 
-    ssh_manager.send_file(local_path + 'result{server_num}_t.json'.format(server_num=server_num),
-                          remote_path + 'result{server_num}_t.json'.format(server_num=server_num))  # 파일전송
+    ssh_manager.send_file(local_path + 'result{server_num},{day}_t.json'.format(server_num=server_num,day=day),
+                          remote_path + 'result{server_num},{day}_t.json'.format(server_num=server_num,day=day))  # 파일전송
 
     os.remove(
-        local_path + 'result{server_num}_t.json'.format(server_num=server_num))
+        local_path + 'result{server_num},{day}_t.json'.format(server_num=server_num,day=day))
 
     ssh_manager.close_ssh_client()  # 세션종료
