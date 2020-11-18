@@ -16,6 +16,7 @@ df = pd.read_csv(local_path + 'filtered_url.csv')
 
 past =  list(df['url'])
 current = list(df1['url'])+list(df2['url'])+list(df3['url'])+list(df4['url'])+list(df5['url'])+list(df6['url'])
+print(len(past))
 print(len(current))
 n,s = compare_car(past,current)
 

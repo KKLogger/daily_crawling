@@ -9,11 +9,11 @@ local_path = '/home/ec2-user/daily_crawling/'
 remote_path = '/home/centos/result_from_servers/'
 
 
-def get_page_url(page_num, user_code, maker_code):
+def get_page_url(page_num, user_code, maker_code,cityCode):
     url = 'https://www.kbchachacha.com/public/search/list.empty?page=' + \
         str(page_num) + '&sort=-orderDate&useCode=' + \
         str(user_code) + '&makerCode=' + \
-        str(maker_code)+'&_pageSize=3&pageSize=4'
+        str(maker_code)+ '&cityCode='+ str(cityCode) +'&_pageSize=3&pageSize=4'
     return url
 
 
@@ -34,39 +34,41 @@ def get_car_urls(user_code):
                    '191', '132', '152', '161',
                    '157', '134', '181', '141',
                    '154', '126', '173', '139',
-                   '169', '143', '167', '127']
+                   '169', '143', '167', '127','192']
+    cityCodes=['021012','021009','021007','021006','021005','021008','021011','021002','021001','021003','021004','021013','021014','021016','021017','021015']
     for maker_code in maker_codes:
-        print(maker_code)
-        page_num = 0
-        while(True):
-            page_num += 1
-            url = get_page_url(page_num, user_code, maker_code)
-            time.sleep(0.3)
-            response = requests.get(url)
-            soup = bs(response.text, "html.parser")
-            ####종료 조건 ###############
-            # if page_num == 3:
-            #     break
-            if soup.find('span', {'class': 'txt'}) is not None:
-                print('종료')
-                break
-            if soup.find('h2') is None:
-                print('종료, blocked')
-                break
-            car_list = soup.find_all('div', {'class': 'area'})
+        for cityCode in cityCodes:
+            print(maker_code)
+            page_num = 0
+            while(True):
+                page_num += 1
+                url = get_page_url(page_num, user_code, maker_code,cityCode)
+                time.sleep(0.3)
+                response = requests.get(url)
+                soup = bs(response.text, "html.parser")
+                ####종료 조건 ###############
+                # if page_num == 3:
+                #     break
+                if soup.find('span', {'class': 'txt'}) is not None:
+                    print('종료')
+                    break
+                if soup.find('h2') is None:
+                    print('종료, blocked')
+                    break
+                car_list = soup.find_all('div', {'class': 'area'})
 
-            for car in car_list:
-                items = car.find_all('a')
-                for item in items:
-                    if 'detail.kbc?carSeq' in item['href']:
-                        item_href = item['href']
-                        price = car.find(
-                            'strong', {'class', 'pay'}).text.strip()
-                        if 'https://' in item_href:
-                            car_url_list.append(item_href+"///" + price)
-                        else:
-                            car_url_list.append(
-                                'https://www.kbchachacha.com' + item_href + "///" + price)
+                for car in car_list:
+                    items = car.find_all('a')
+                    for item in items:
+                        if 'detail.kbc?carSeq' in item['href']:
+                            item_href = item['href']
+                            price = car.find(
+                                'strong', {'class', 'pay'}).text.strip()
+                            if 'https://' in item_href:
+                                car_url_list.append(item_href+"///" + price)
+                            else:
+                                car_url_list.append(
+                                    'https://www.kbchachacha.com' + item_href + "///" + price)
 
     return car_url_list
 

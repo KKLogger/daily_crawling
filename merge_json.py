@@ -14,7 +14,7 @@ if __name__ == '__main__':
     options = sys.argv[1]
     if options == '1':
         str_list = list()
-        for server_num in range(1, 64):
+        for server_num in range(1, 31):
             with open(local_path + 'result{server_num}_t.json'.format(server_num=server_num), encoding='utf-8-sig', errors='ignore') as f:
                 str_data = f.read()
             str_data = str(str_data)
