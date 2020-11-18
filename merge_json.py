@@ -3,7 +3,9 @@ from ast import literal_eval
 import os
 from datetime import datetime
 import sys
-
+'''
+>>> 수집한 json 병합하는 코드
+'''
 # local_path = "/home/centos/result_from_servers/"
 
 local_path = "C:/Users/jlee/Desktop/아름드리/BackUp/1117/"

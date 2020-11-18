@@ -10,6 +10,10 @@ remote_path = '/home/centos/result_from_servers/'
 
 
 def get_page_url(page_num, user_code, maker_code,cityCode):
+    '''
+    >>>input 페이지 번호, 차량종류번호, 브랜드번호, 중고차판매지역번호
+    >>>output 쿼리로 필터링 적용된 url
+    '''
     url = 'https://www.kbchachacha.com/public/search/list.empty?page=' + \
         str(page_num) + '&sort=-orderDate&useCode=' + \
         str(user_code) + '&makerCode=' + \
@@ -18,7 +22,9 @@ def get_page_url(page_num, user_code, maker_code,cityCode):
 
 
 def get_car_urls(user_code):
-
+    '''
+    >>> 3개의 필터로 각각 필터링한  url에 접근해서 각 페이지의 차량 url 수집
+    '''
     car_url_list = list()
     maker_codes = ['101', '102', '103', '105',
                    '104', '189', '106', '107',

@@ -5,6 +5,10 @@ import pandas as pd
 
 
 def df_to_dict(df):
+    '''
+    >>>데이터 프레임
+    >>>dict로 변환하여 반환
+    '''
     result = df.to_dict()
     for key, value in result.items():
         result[key] = list(value.values())[0]

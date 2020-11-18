@@ -7,6 +7,10 @@ from data_processing import *
 
 
 def get_car_info(url, temp):
+    '''
+    >>>input url, 차량 데이터 담을 dict
+    >>>get_checkdata 함수와 get_history에서 사용할 인자(requests 보낼때 필요)
+    '''
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -207,6 +211,10 @@ def get_car_info(url, temp):
 
 
 def get_checkdata(url, temp, chk_tag_url):
+    '''
+    >>>input url, 차량정보 저장할 dict, 성능점검표 url
+    >>>output 차량정보
+    '''
     if 'http' in chk_tag_url:  # 다른 페이지로 이동
         # call domain by scraper
         temp['CHECK_INNER'] = "null"
@@ -248,6 +256,11 @@ def get_checkdata(url, temp, chk_tag_url):
 
 
 def get_options(url, option_codes):
+    '''
+    >>>input url, 차량의 옵션 항목들을 가지고 있는 리스트
+    option_codes중에서 해당 차량이 어떤 옵션이 있는지 비교 후 dict에 저장
+    >>>output option 관련 정보만 수집한 dict
+    '''
     time.sleep(random.uniform(0.1,0.25))
     res = requests.post(
         'https://www.kbchachacha.com/public/car/option/code/list.json')
@@ -307,6 +320,9 @@ def get_options(url, option_codes):
 
 
 def get_optioncodes(url):
+    '''
+    >>>input url -> output 차량 전체 옵션 목록
+    '''
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -341,7 +357,10 @@ def get_optioncodes(url):
 
 
 def get_history(url, temp, carHistorySeq):
-
+    '''
+    >>> input url,dict, 차량사고내역정보관련 고유번호
+    >>> output dict
+    '''
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -446,6 +465,10 @@ def get_history(url, temp, carHistorySeq):
 
 
 def crawl_iframe(url, temp, soup):
+    '''
+    >>> input url, dict, 수집할 iframe의 html코드
+    >>> oiutput 성능정검표만 수집한 dict
+    '''
     table = soup.find_all('table')
     temp['RegistrationID'] = table[0].find_all('tr')[5].find('td').text
     if temp['RegistrationID'] == '':
