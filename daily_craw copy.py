@@ -1,10 +1,9 @@
-from to_server.my_func.crawl_info import *
-from to_server.my_func.data_processing import *
-from to_server.my_func.sshmanager import SSHManager
+from crawl_info import *
+from SSHManager import SSHManager
 
 
-local_path = '/home/ec2-user/daily_crawling/'
-# local_path = '/C:/Users/jlee/Desktop/test/'
+# local_path = '/home/ec2-user/daily_crawling/'
+local_path = '/C:/Users/jlee/Desktop/test/'
 remote_path = '/home/centos/result_from_servers/'
 
 
@@ -101,6 +100,7 @@ if __name__ == '__main__':
     new_car, sold_car = compare_car(p_car_urls, r_car_urls)
     print(len(new_car))
     print(len(sold_car))
+    input()
     new_url, new_price = split_car(new_car)
     sold_url, sold_price = split_car(sold_car)
     '''

@@ -6,6 +6,7 @@ import time
 import random
 import json
 import sys
+import os
 
 local_path = '/home/ec2-user/daily_crawling/'
 remote_path = '/home/centos/result_from_servers/'
@@ -92,7 +93,7 @@ if __name__ == '__main__':
     os.remove(local_path + 'filtered_url_6.csv')
 
     car_urls, temp = split_car(car_urls)
-    num_per_url = len(car_urls)//62
+    num_per_url = len(car_urls)//29
 
     server_num = int(server_num)
     start_idx = 0

@@ -6,7 +6,6 @@ import time
 from SSHManager import SSHManager
 import os
 local_path = '/home/ec2-user/daily_crawling/'
-
 remote_path = '/home/centos/result_from_servers/'
 
 
