@@ -63,19 +63,23 @@ if __name__ == '__main__':
     ssh_manager = SSHManager()
     ssh_manager.create_ssh_client(
         "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
-
-    ssh_manager.get_file(remote_path + 'filtered_url_1.csv',
-                         local_path + 'filtered_url_1.csv')  # 파일다운로드
-    ssh_manager.get_file(remote_path + 'filtered_url_2.csv',
-                         local_path + 'filtered_url_2.csv')  # 파일다운로드
-    ssh_manager.get_file(remote_path + 'filtered_url_3.csv',
-                         local_path + 'filtered_url_3.csv')  # 파일다운로드
-    ssh_manager.get_file(remote_path + 'filtered_url_4.csv',
-                         local_path + 'filtered_url_4.csv')  # 파일다운로드
-    ssh_manager.get_file(remote_path + 'filtered_url_5.csv',
-                         local_path + 'filtered_url_5.csv')  # 파일다운로드
-    ssh_manager.get_file(remote_path + 'filtered_url_6.csv',
-                         local_path + 'filtered_url_6.csv')  # 파일다운로드
+    for idx in range(20):
+        try:
+            ssh_manager.get_file(remote_path + 'filtered_url_1.csv',
+                                local_path + 'filtered_url_1.csv')  # 파일다운로드
+            ssh_manager.get_file(remote_path + 'filtered_url_2.csv',
+                                local_path + 'filtered_url_2.csv')  # 파일다운로드
+            ssh_manager.get_file(remote_path + 'filtered_url_3.csv',
+                                local_path + 'filtered_url_3.csv')  # 파일다운로드
+            ssh_manager.get_file(remote_path + 'filtered_url_4.csv',
+                                local_path + 'filtered_url_4.csv')  # 파일다운로드
+            ssh_manager.get_file(remote_path + 'filtered_url_5.csv',
+                                local_path + 'filtered_url_5.csv')  # 파일다운로드
+            ssh_manager.get_file(remote_path + 'filtered_url_6.csv',
+                                local_path + 'filtered_url_6.csv')  # 파일다운로드
+            break
+        except :
+            time.sleep(300)
     r_df_1 = pd.read_csv(local_path + 'filtered_url_1.csv')
     r_df_2 = pd.read_csv(local_path + 'filtered_url_2.csv')
     r_df_3 = pd.read_csv(local_path + 'filtered_url_3.csv')
