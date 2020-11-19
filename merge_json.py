@@ -9,13 +9,13 @@ import sys
 # local_path = "/home/centos/result_from_servers/"
 
 local_path = "C:/Users/jlee/Desktop/아름드리/BackUp/1117/"
-
+day = datetime.datetime.today().strftime('%Y%m%d')
 if __name__ == '__main__':
     result = list()
     str_list = list()
 
     for server_num in range(1, 64):
-        with open(local_path + 'result{server_num}_t.json'.format(server_num=server_num), encoding='utf-8-sig', errors='ignore') as f:
+        with open(local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day), encoding='utf-8-sig', errors='ignore') as f:
             str_data = f.read()
         str_data = str(str_data)
         str_data = str_data[:]
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
         # os.remove(local_path+'result_t.json')
     print("총 json에 차량 개수 ", len(result))
-    day = datetime.datetime.today().strftime('%Y%m%d')
+
     with open(local_path+'result,{num}건,{day}.json'.format(num=len(result),day=day), 'w', encoding='utf-8-sig') as ff:
         json.dump(result, ff, indent=4,
                     ensure_ascii=False, sort_keys=True)

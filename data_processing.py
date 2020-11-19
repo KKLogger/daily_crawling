@@ -52,7 +52,7 @@ def get_dateform(date):
 def compare_car(p_car_urls, r_car_urls):
     '''
     input : url///price list 어제 수집한 데이터 와 오늘 수집한 데이터
-    output : 두 list 를 비교하여 신규등록 차량 리스트와 판매완료 차량 리스트 반환 
+    output : 두 list 를 비교하여 신규등록 차량 리스트와 판매완료 차량 리스트 반환
     '''
     chage_car_urls = (set(r_car_urls) - set(p_car_urls)
                       ) & (set(r_car_urls) - set(p_car_urls))

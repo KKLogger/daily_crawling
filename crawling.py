@@ -48,7 +48,7 @@ def start(urls, server_num, option_codes):
 
             print("현재 : ", num)
             if bool(temp):
-                with open(local_path + 'result{server_num},{day}_t.json'.format(server_num=server_num,day=day), 'a', encoding='utf-8-sig') as outfile:
+                with open(local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day), 'a', encoding='utf-8-sig') as outfile:
                     json.dump(temp, outfile, indent=4,
                               ensure_ascii=False, sort_keys=True)
         except Exception as e:
@@ -119,10 +119,10 @@ if __name__ == '__main__':
 
     start(car_urls, server_num, option_codes)
 
-    ssh_manager.send_file(local_path + 'result{server_num},{day}_t.json'.format(server_num=server_num,day=day),
-                          remote_path + 'result{server_num},{day}_t.json'.format(server_num=server_num,day=day))  # 파일전송
+    ssh_manager.send_file(local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day),
+                          remote_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))  # 파일전송
 
     os.remove(
-        local_path + 'result{server_num},{day}_t.json'.format(server_num=server_num,day=day))
+        local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))
 
     ssh_manager.close_ssh_client()  # 세션종료
