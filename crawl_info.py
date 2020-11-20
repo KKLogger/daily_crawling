@@ -26,7 +26,7 @@ def get_car_info(url, temp):
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36'
     }
-    time.sleep(random.uniform(0.1,0.25))
+    time.sleep(random.uniform(0.1,0.3))
     response = requests.get(url, headers=headers)
     soup = bs(response.text, 'html.parser')
     soup_t = str(soup)
@@ -66,7 +66,7 @@ def get_car_info(url, temp):
         'carSeqVal': carSeq
     }
     try:
-        time.sleep(random.uniform(0.1,0.25))
+        time.sleep(random.uniform(0.1,0.3))
         res_json = requests.post(
             json_url, headers=json_headers, data=json_data)
         car_dict = res_json.json()
@@ -129,7 +129,7 @@ def get_car_info(url, temp):
 
     img_src = soup.find('ul', {'class': 'bxslider'}).find('img').get('src')
     try:
-        time.sleep(random.uniform(0.1,0.25))
+        time.sleep(random.uniform(0.1,0.3))
         t_date = requests.get(img_src).headers['Last-Modified'].split(' ')
         ModifiedDate = get_dateform(t_date)
     except:
@@ -225,7 +225,7 @@ def get_checkdata(url, temp, chk_tag_url):
             'layerId': 'layerCarCheckInfo',
             'carSeq': carSeq
         }
-        time.sleep(random.uniform(0.1,0.25))
+        time.sleep(random.uniform(0.1,0.3))
         res = requests.post(
             'https://www.kbchachacha.com/public/layer/car/check/info.kbc', data=data)
 
@@ -261,7 +261,7 @@ def get_options(url, option_codes):
     option_codes중에서 해당 차량이 어떤 옵션이 있는지 비교 후 dict에 저장
     >>>output option 관련 정보만 수집한 dict
     '''
-    time.sleep(random.uniform(0.1,0.25))
+    time.sleep(random.uniform(0.1,0.3))
     res = requests.post(
         'https://www.kbchachacha.com/public/car/option/code/list.json')
     json_datas = json.loads(res.text)
@@ -383,7 +383,7 @@ def get_history(url, temp, carHistorySeq):
         'layerId': 'layerCarHistoryInfo',
         'carHistorySeq': carHistorySeq
     }
-    time.sleep(random.uniform(0.1,0.25))
+    time.sleep(random.uniform(0.1,0.3))
     response = requests.post(
         'https://www.kbchachacha.com/public/layer/car/history/info.kbc', headers=headers, data=datas)
     soup = bs(response.text, 'html.parser')

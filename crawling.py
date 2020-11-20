@@ -118,11 +118,14 @@ if __name__ == '__main__':
             idx += 1
 
     start(car_urls, server_num, option_codes)
-
-    ssh_manager.send_file(local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day),
-                          remote_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))  # 파일전송
-
-    os.remove(
-        local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))
+    for i  in range(20):
+        try:
+            ssh_manager.send_file(local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day),
+                            remote_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))  # 파일전송=
+            os.remove(
+                local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))
+            break
+        except :
+            pass
 
     ssh_manager.close_ssh_client()  # 세션종료

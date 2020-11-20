@@ -8,13 +8,13 @@ import sys
 '''
 # local_path = "/home/centos/result_from_servers/"
 
-local_path = "C:/Users/jlee/Desktop/아름드리/BackUp/1117/"
-day = datetime.datetime.today().strftime('%Y%m%d')
+local_path = "C:/Users/jlee/Desktop/아름드리/BackUp/1120/"
+day = datetime.today().strftime('%Y%m%d')
 if __name__ == '__main__':
     result = list()
     str_list = list()
 
-    for server_num in range(1, 64):
+    for server_num in range(1, 31):
         with open(local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day), encoding='utf-8-sig', errors='ignore') as f:
             str_data = f.read()
         str_data = str(str_data)
