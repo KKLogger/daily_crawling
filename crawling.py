@@ -61,8 +61,16 @@ if __name__ == '__main__':
 
     server_num = sys.argv[1]
     ssh_manager = SSHManager()
-    ssh_manager.create_ssh_client(
-        "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
+
+    for _ in range(10):
+        try:
+            ssh_manager.create_ssh_client(
+                "133.186.150.193", "centos", "gozjRjwu~!", key_filename=local_path + 'shopify.pem')  # 세션생성
+            break
+        except Exception as e:
+            print(f"error : {e}")
+            time.sleep(10)
+
     for idx in range(20):
         try:
             ssh_manager.get_file(remote_path + 'filtered_url_1.csv',
@@ -116,16 +124,21 @@ if __name__ == '__main__':
         except:
             print('option_codes error')
             idx += 1
+            if idx > len(car_urls):
+                break
 
     start(car_urls, server_num, option_codes)
     for i  in range(20):
         try:
-            ssh_manager.send_file(local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day),
-                            remote_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))  # 파일전송=
-            os.remove(
-                local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))
-            break
-        except :
+            if bool(ssh_manager.ssh_client):
+                ssh_manager.send_file(local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day),
+                                remote_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))  # 파일전송=
+                os.remove(
+                    local_path + '{day}.result{server_num}_t.json'.format(server_num=server_num,day=day))
+                break
+        except Exception as e:
+            print(f"error : {e}")
+            time.sleep(10)
             pass
 
     ssh_manager.close_ssh_client()  # 세션종료
