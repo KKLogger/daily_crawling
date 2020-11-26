@@ -8,7 +8,7 @@ import sys
 '''
 # local_path = "/home/centos/result_from_servers/"
 
-local_path = "C:/Users/jlee/Desktop/아름드리/BackUp/1123/"
+local_path = "C:/Users/jlee/Desktop/아름드리/BackUp/1124/"
 day = datetime.today().strftime('%Y%m%d')
 if __name__ == '__main__':
     result = list()
@@ -39,6 +39,6 @@ if __name__ == '__main__':
         # os.remove(local_path+'result_t.json')
     print("총 json에 차량 개수 ", len(result))
 
-    with open(local_path+'result,{num}건,{day}.json'.format(num=len(result),day=day), 'w', encoding='utf-8-sig') as ff:
+    with open(local_path+'KB차차차,{num}건,{day}.json'.format(num=len(result),day=day), 'w', encoding='utf-8-sig') as ff:
         json.dump(result, ff, indent=4,
                     ensure_ascii=False, sort_keys=True)

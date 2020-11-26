@@ -85,15 +85,16 @@ if __name__ == '__main__':
                                 local_path + 'filtered_url_5.csv')  # 파일다운로드
             ssh_manager.get_file(remote_path + 'filtered_url_6.csv',
                                 local_path + 'filtered_url_6.csv')  # 파일다운로드
+            r_df_1 = pd.read_csv(local_path + 'filtered_url_1.csv')
+            r_df_2 = pd.read_csv(local_path + 'filtered_url_2.csv')
+            r_df_3 = pd.read_csv(local_path + 'filtered_url_3.csv')
+            r_df_4 = pd.read_csv(local_path + 'filtered_url_4.csv')
+            r_df_5 = pd.read_csv(local_path + 'filtered_url_5.csv')
+            r_df_6 = pd.read_csv(local_path + 'filtered_url_6.csv')
             break
         except :
-            time.sleep(300)
-    r_df_1 = pd.read_csv(local_path + 'filtered_url_1.csv')
-    r_df_2 = pd.read_csv(local_path + 'filtered_url_2.csv')
-    r_df_3 = pd.read_csv(local_path + 'filtered_url_3.csv')
-    r_df_4 = pd.read_csv(local_path + 'filtered_url_4.csv')
-    r_df_5 = pd.read_csv(local_path + 'filtered_url_5.csv')
-    r_df_6 = pd.read_csv(local_path + 'filtered_url_6.csv')
+            time.sleep(10)
+
 
     car_urls = list(r_df_1['url']) + list(r_df_2['url']) + \
         list(r_df_3['url']) + list(r_df_4['url']) + \
