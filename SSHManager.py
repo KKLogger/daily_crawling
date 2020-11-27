@@ -1,6 +1,7 @@
 from scp import SCPClient, SCPException
 import paramiko
 
+
 class SSHManager:
     """
     usage:
@@ -22,10 +23,14 @@ class SSHManager:
         port = 22
         if self.ssh_client is None:
             self.ssh_client = paramiko.SSHClient()
-            self.ssh_client.set_missing_host_key_policy(
-                paramiko.AutoAddPolicy())
+            self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.ssh_client.connect(
-                hostname, port=port, username=username, password=password, key_filename=key_filename)
+                hostname,
+                port=port,
+                username=username,
+                password=password,
+                key_filename=key_filename,
+            )
         else:
             print("SSH client session exist.")
 
