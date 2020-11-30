@@ -41,7 +41,6 @@ def start(urls, server_num, option_codes):
             num += 1
         except Exception as e:
             print(f"error in get_checkdata : {e}")
-        num+=1
         print("현재 : ", num)
         try:
             if bool(temp):
