@@ -79,7 +79,8 @@ def get_car_info(url, temp):
     car_price = (
         soup.find("div", {"class": "car-buy-price"}).find("div").find("strong").text
     )
-    car_info1 = soup.find("dl", {"class": "claerFix"}).find_all("dd")
+    # car_info1 = soup.find("dl", {"class": "claerFix"}).find_all("dd")
+    car_info1 = soup.find("dl", {"class": "detail-info02"}).find_all("td")
     car_info1 = [x.text.strip().replace(" ", "") for x in car_info1]
     car_info2 = soup.find("div", {"class": "detail-info02"}).find_all("dd")
     car_info2 = [x.text.strip().replace(" ", "") for x in car_info2]
