@@ -39,23 +39,27 @@ def start(urls, server_num, option_codes):
         #     temp = get_checkdata(url, temp)
         # except:
         #     print("error in car checkdata")
-        try:
-            temp, carHistorySeq, chk_tag_url = get_car_info(url, temp)
-        except Exception as e:
-            print(f"error in get_car_info : {e}")
-        try:
-            temp.update(get_history(url, temp, carHistorySeq))
-        except Exception as e:
-            print(f"error in get_history : {e}")
-        try:
-            temp["Options"] = get_options(url, option_codes)
-        except Exception as e:
-            print(f"error in get_options : {e}")
-        try:
-            temp = get_checkdata(url, temp, chk_tag_url)
-            num += 1
-        except Exception as e:
-            print(f"error in get_checkdata : {e}")
+        temp, carHistorySeq, chk_tag_url = get_car_info(url, temp)
+        temp.update(get_history(url, temp, carHistorySeq))
+        temp["Options"] = get_options(url, option_codes)
+        temp = get_checkdata(url, temp, chk_tag_url)
+        # try:
+        #     temp, carHistorySeq, chk_tag_url = get_car_info(url, temp)
+        # except Exception as e:
+        #     print(f"error in get_car_info : {e}")
+        # try:
+        #     temp.update(get_history(url, temp, carHistorySeq))
+        # except Exception as e:
+        #     print(f"error in get_history : {e}")
+        # try:
+        #     temp["Options"] = get_options(url, option_codes)
+        # except Exception as e:
+        #     print(f"error in get_options : {e}")
+        # try:
+        #     temp = get_checkdata(url, temp, chk_tag_url)
+        #     num += 1
+        # except Exception as e:
+        #     print(f"error in get_checkdata : {e}")
         print("현재 : ", num)
         try:
             if bool(temp):
