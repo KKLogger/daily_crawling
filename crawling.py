@@ -41,12 +41,23 @@ def start(urls, server_num, option_codes):
         #     print("error in car checkdata")
         try:
             temp, carHistorySeq, chk_tag_url = get_car_info(url, temp)
+        except Exception as e:
+            print(f"error in get_car_info : {e}")
+        try:
             temp.update(get_history(url, temp, carHistorySeq))
+        except Exception as e:
+            print(f"error in get_history : {e}")
+        try:
             temp["Options"] = get_options(url, option_codes)
+        except Exception as e:
+            print(f"error in get_options : {e}")
+        try:
             temp = get_checkdata(url, temp, chk_tag_url)
             num += 1
-
-            print("현재 : ", num)
+        except Exception as e:
+            print(f"error in get_checkdata : {e}")
+        print("현재 : ", num)
+        try:
             if bool(temp):
                 with open(
                     local_path
@@ -60,7 +71,7 @@ def start(urls, server_num, option_codes):
                         temp, outfile, indent=4, ensure_ascii=False, sort_keys=True
                     )
         except Exception as e:
-            print(f"error : {e}")
+            print(f"error in dump : {e}")
 
 
 #########################main#################################
