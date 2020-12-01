@@ -30,9 +30,7 @@ def get_page_url(page_num, user_code, maker_code, cityCode):
 
 
 def get_car_urls(user_code):
-    """
-    >>> 3개의 필터로 각각 필터링한  url에 접근해서 각 페이지의 차량 url 수집
-    """
+    # 3개 필터를 이용해 url 수집
     car_url_list = list()
     maker_codes = [
         "101", #현대
@@ -119,7 +117,7 @@ def get_car_urls(user_code):
     # for maker_code in maker_codes:
     for maker_code in range(99,201):
         for cityCode in cityCodes:
-            print(maker_code)
+            print(maker_code,user_code,cityCode)
             page_num = 0
             while True:
                 page_num += 1
@@ -137,7 +135,6 @@ def get_car_urls(user_code):
                     print("종료, blocked")
                     break
                 car_list = soup.find_all("div", {"class": "area"})
-
                 for car in car_list:
                     items = car.find_all("a")
                     for item in items:
