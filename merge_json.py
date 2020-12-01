@@ -9,7 +9,7 @@ import sys
 """
 # local_path = "/home/centos/result_from_servers/"
 
-local_path = "C:/Users/jlee/Desktop/아름드리/BackUp/1124/"
+local_path = "C:/Users/hckim/Desktop/아름드리/1201/"
 day = datetime.today().strftime("%Y%m%d")
 if __name__ == "__main__":
     result = list()
