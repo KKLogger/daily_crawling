@@ -103,7 +103,7 @@ def get_car_urls(user_code):
         "021005", #광주
         "021008", #부산
         "021011", #울산
-        "021010" #세종
+        "021010", #세종
         "021002", #경기
         "021001", #강원
         "021003", #경남
@@ -156,6 +156,7 @@ def get_car_urls(user_code):
 
 if __name__ == "__main__":
     server_num = int(sys.argv[1])
+
     s_time = time.time()
     car_url_list = list()
     user_codes = [
