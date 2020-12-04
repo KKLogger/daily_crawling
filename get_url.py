@@ -179,7 +179,7 @@ if __name__ == "__main__":
     )
     print("총 실행시간", time.time() - s_time)
     ssh_manager = SSHManager()
-    for _ in range(10):
+    for _ in range(100):
         try:
             ssh_manager.create_ssh_client(
                 "133.186.150.193",
