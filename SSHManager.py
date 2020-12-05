@@ -30,6 +30,7 @@ class SSHManager:
                 username=username,
                 password=password,
                 key_filename=key_filename,
+                banner_timeout=200
             )
         else:
             print("SSH client session exist.")
