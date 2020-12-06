@@ -8,11 +8,12 @@ import json
 import sys
 import os
 import datetime
+import random
 
 local_path = "/home/ec2-user/daily_crawling/"
 remote_path = "/home/centos/result_from_servers/"
 day = datetime.datetime.today().strftime("%Y%m%d")
-
+random_int = random.randint(25,40)
 
 def start(urls, server_num, option_codes):
     num = 0
@@ -77,7 +78,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"error : {e} at create ssh")
             print("create fail time :", i)
-            time.sleep(30)
+            time.sleep(random_int)
 
     for idx in range(100):
         try:
