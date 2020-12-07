@@ -6,7 +6,8 @@ import time
 from SSHManager import SSHManager
 import os
 
-local_path = "/home/ec2-user/daily_crawling/"
+# local_path = "/home/ec2-user/daily_crawling/"
+local_path = "C:/Projects/crawlingCarInfo/to_server/"
 remote_path = "/home/centos/result_from_servers/"
 
 
@@ -156,7 +157,6 @@ def get_car_urls(user_code):
 
 if __name__ == "__main__":
     server_num = int(sys.argv[1])
-
     s_time = time.time()
     car_url_list = list()
     user_codes = [
@@ -174,12 +174,13 @@ if __name__ == "__main__":
     car_url_list = list(set(car_url_list))
     print(len(car_url_list))
     df["url"] = car_url_list
+    print("총 실행시간", time.time() - s_time)
     df.to_csv(
         local_path + "filtered_url_{server_num}.csv".format(server_num=server_num)
     )
-    print("총 실행시간", time.time() - s_time)
+
     ssh_manager = SSHManager()
-    for _ in range(100):
+    for _ in range(10):
         try:
             ssh_manager.create_ssh_client(
                 "133.186.150.193",
