@@ -79,6 +79,10 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"error : {e} at create ssh")
             print("create fail time :", i)
+            try:
+                ssh_manager.close_ssh_client()  # 세션종료
+            except:
+                pass
             time.sleep(random_int)
 
     for idx in range(100):
@@ -111,7 +115,23 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"error {e} ///////////at read csv")
             print("read fail time :", i)
-            time.sleep(60)
+            for i in range(100):
+                try:
+                    ssh_manager.create_ssh_client(
+                        "133.186.150.193",
+                        "centos",
+                        "gozjRjwu~!",
+                        key_filename=local_path + "shopify.pem",
+                    )  # 세션생성
+                    break
+                except Exception as e:
+                    print(f"error : {e} at create ssh")
+                    print("create fail time :", i)
+                    try:
+                        ssh_manager.close_ssh_client()  # 세션종료
+                    except Exception as e:
+                        pass
+                    time.sleep(random_int)
 
     car_urls = (
         list(r_df_1["url"])
