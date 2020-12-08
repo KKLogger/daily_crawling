@@ -114,6 +114,10 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"error {e} ///////////at read csv")
             print("read fail time :", i)
+            try:
+                ssh_manager.close_ssh_client()  # 세션종료
+            except Exception as e:
+                pass
             for i in range(100):
                 try:
                     ssh_manager.create_ssh_client(
