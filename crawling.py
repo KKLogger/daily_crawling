@@ -13,8 +13,7 @@ import random
 local_path = "/home/ec2-user/daily_crawling/"
 remote_path = "/home/centos/result_from_servers/"
 day = datetime.datetime.today().strftime("%Y%m%d")
-random_int = random.randint(25, 40)
-
+random_int = random.randint(25,40)
 
 def start(urls, server_num, option_codes):
     num = 0
@@ -185,27 +184,17 @@ if __name__ == "__main__":
                         server_num=server_num, day=day
                     ),
                 )  # 파일전송=
-                for _ in range(100):
-                    try:
-                        ssh_manager.get_file(
-                            remote_path + "{day}.result{server_num}_t.json",
-                            local_path + "{day}.result{server_num}_t.json",
-                        )  # 파일다운로드
-                        os.remove(
-                            local_path
-                            + "{day}.result{server_num}_t.json".format(
-                                server_num=server_num, day=day
-                            )
-                        )
-                    except Exception as e:
-                        pass
+                os.remove(
+                    local_path
+                    + "{day}.result{server_num}_t.json".format(
+                        server_num=server_num, day=day
+                    )
+                )
                 break
         except Exception as e:
             print(f"error {e} ///////////at send json")
             print("send fail time :", i)
             time.sleep(60)
             pass
-
-
 
     ssh_manager.close_ssh_client()  # 세션종료

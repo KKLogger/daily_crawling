@@ -9,30 +9,34 @@ import sys
 """
 # local_path = "/home/centos/result_from_servers/"
 
-local_path = "C:/Users/hckim/Desktop/아름드리/1201/"
+local_path = "C:/Users/hckim/Desktop/아름드리/1206/"
 day = datetime.today().strftime("%Y%m%d")
+day = 20201206
 if __name__ == "__main__":
     result = list()
     str_list = list()
 
     for server_num in range(1, 31):
-        with open(
-            local_path
-            + "{day}.result{server_num}_t.json".format(server_num=server_num, day=day),
-            encoding="utf-8-sig",
-            errors="ignore",
-        ) as f:
-            str_data = f.read()
-        str_data = str(str_data)
-        str_data = str_data[:]
-        str_data = str_data.replace("{}", "")
-        str_data = str_data.replace("}{", "}///{")
-        str_datas = str_data.split("///")
-        str_datas = [x.replace("'", '"') for x in str_datas]
-        str_list = str_list + str_datas
-        print(server_num)
-    str_list = list(set(str_list))
-    num = 0
+        try:
+            with open(
+                local_path
+                + "{day}.result{server_num}_t.json".format(server_num=server_num, day=day),
+                encoding="utf-8-sig",
+                errors="ignore",
+            ) as f:
+                str_data = f.read()
+            str_data = str(str_data)
+            str_data = str_data[:]
+            str_data = str_data.replace("{}", "")
+            str_data = str_data.replace("}{", "}///{")
+            str_datas = str_data.split("///")
+            str_datas = [x.replace("'", '"') for x in str_datas]
+            str_list = str_list + str_datas
+            print(server_num)
+            str_list = list(set(str_list))
+        except:
+            continue
+        num = 0
     for str_data in str_list:
         num += 1
         try:
@@ -42,7 +46,6 @@ if __name__ == "__main__":
         except:
             print("Fail", num)
 
-        # os.remove(local_path+'result_t.json')
     print("총 json에 차량 개수 ", len(result))
 
     with open(
