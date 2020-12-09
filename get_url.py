@@ -180,7 +180,9 @@ if __name__ == "__main__":
     )
 
     ssh_manager = SSHManager()
-    for _ in range(10):
+    for i in range(10):
+        if i!= 0 :
+            ssh_manager.close_ssh_client()
         try:
             ssh_manager.create_ssh_client(
                 "133.186.150.193",
@@ -188,16 +190,15 @@ if __name__ == "__main__":
                 "gozjRjwu~!",
                 key_filename=local_path + "shopify.pem",
             )  # 세션생성
+            ssh_manager.send_file(
+                local_path + "filtered_url_{server_num}.csv".format(server_num=server_num),
+                remote_path + "filtered_url_{server_num}.csv".format(server_num=server_num),
+            )  # 파일전송
+            os.remove(
+                local_path + "filtered_url_{server_num}.csv".format(server_num=server_num)
+            )
             break
         except Exception as e:
             print(f"error : {e}")
             time.sleep(10)
-
-    ssh_manager.send_file(
-        local_path + "filtered_url_{server_num}.csv".format(server_num=server_num),
-        remote_path + "filtered_url_{server_num}.csv".format(server_num=server_num),
-    )  # 파일전송
-    os.remove(
-        local_path + "filtered_url_{server_num}.csv".format(server_num=server_num)
-    )
     ssh_manager.close_ssh_client()  # 세션종료

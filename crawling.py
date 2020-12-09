@@ -67,6 +67,8 @@ if __name__ == "__main__":
     ssh_manager = SSHManager()
 
     for i in range(100):
+        if i!=0:
+            ssh_manager.close_ssh_client()
         try:
             ssh_manager.create_ssh_client(
                 "133.186.150.193",
@@ -74,18 +76,6 @@ if __name__ == "__main__":
                 "gozjRjwu~!",
                 key_filename=local_path + "shopify.pem",
             )  # 세션생성
-            break
-        except Exception as e:
-            print(f"error : {e} at create ssh")
-            print("create fail time :", i)
-            try:
-                ssh_manager.close_ssh_client()  # 세션종료
-            except:
-                pass
-            time.sleep(random_int)
-
-    for i in range(100):
-        try:
             ssh_manager.get_file(
                 remote_path + "filtered_url_1.csv", local_path + "filtered_url_1.csv"
             )  # 파일다운로드
@@ -112,29 +102,57 @@ if __name__ == "__main__":
             r_df_6 = pd.read_csv(local_path + "filtered_url_6.csv")
             break
         except Exception as e:
-            print(f"error {e} ///////////at read csv")
-            print("read fail time :", i)
-            try:
-                ssh_manager.close_ssh_client()  # 세션종료
-            except Exception as e:
-                pass
-            for i in range(100):
-                try:
-                    ssh_manager.create_ssh_client(
-                        "133.186.150.193",
-                        "centos",
-                        "gozjRjwu~!",
-                        key_filename=local_path + "shopify.pem",
-                    )  # 세션생성
-                    break
-                except Exception as e:
-                    print(f"error : {e} at create ssh")
-                    print("create fail time :", i)
-                    try:
-                        ssh_manager.close_ssh_client()  # 세션종료
-                    except Exception as e:
-                        pass
-                    time.sleep(random_int)
+            print(f"error : {e} at create ssh")
+            print("create fail time :", i)
+            time.sleep(random_int)
+
+    # for i in range(100):
+    #     try:
+    #         ssh_manager.get_file(
+    #             remote_path + "filtered_url_1.csv", local_path + "filtered_url_1.csv"
+    #         )  # 파일다운로드
+    #         ssh_manager.get_file(
+    #             remote_path + "filtered_url_2.csv", local_path + "filtered_url_2.csv"
+    #         )  # 파일다운로드
+    #         ssh_manager.get_file(
+    #             remote_path + "filtered_url_3.csv", local_path + "filtered_url_3.csv"
+    #         )  # 파일다운로드
+    #         ssh_manager.get_file(
+    #             remote_path + "filtered_url_4.csv", local_path + "filtered_url_4.csv"
+    #         )  # 파일다운로드
+    #         ssh_manager.get_file(
+    #             remote_path + "filtered_url_5.csv", local_path + "filtered_url_5.csv"
+    #         )  # 파일다운로드
+    #         ssh_manager.get_file(
+    #             remote_path + "filtered_url_6.csv", local_path + "filtered_url_6.csv"
+    #         )  # 파일다운로드
+    #         r_df_1 = pd.read_csv(local_path + "filtered_url_1.csv")
+    #         r_df_2 = pd.read_csv(local_path + "filtered_url_2.csv")
+    #         r_df_3 = pd.read_csv(local_path + "filtered_url_3.csv")
+    #         r_df_4 = pd.read_csv(local_path + "filtered_url_4.csv")
+    #         r_df_5 = pd.read_csv(local_path + "filtered_url_5.csv")
+    #         r_df_6 = pd.read_csv(local_path + "filtered_url_6.csv")
+    #         break
+    #     except Exception as e:
+    #         print(f"error {e} ///////////at read csv")
+    #         print("read fail time :", i)
+    #         try:
+    #             ssh_manager.close_ssh_client()  # 세션종료
+    #         except Exception as e:
+    #             pass
+    #         for i in range(100):
+    #             try:
+    #                 ssh_manager.create_ssh_client(
+    #                     "133.186.150.193",
+    #                     "centos",
+    #                     "gozjRjwu~!",
+    #                     key_filename=local_path + "shopify.pem",
+    #                 )  # 세션생성
+    #                 break
+    #             except Exception as e:
+    #                 print(f"error : {e} at create ssh")
+    #                 print("create fail time :", i)
+    #                 time.sleep(random_int)
 
     car_urls = (
         list(r_df_1["url"])
@@ -195,6 +213,14 @@ if __name__ == "__main__":
                     )
                 )
                 break
+            else:
+                ssh_manager.close_ssh_client()
+                ssh_manager.create_ssh_client(
+                    "133.186.150.193",
+                    "centos",
+                    "gozjRjwu~!",
+                    key_filename=local_path + "shopify.pem",
+                )
         except Exception as e:
             print(f"error {e} ///////////at send json")
             print("send fail time :", i)
