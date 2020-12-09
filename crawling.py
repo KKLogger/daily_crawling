@@ -84,7 +84,7 @@ if __name__ == "__main__":
                 pass
             time.sleep(random_int)
 
-    for idx in range(100):
+    for i in range(100):
         try:
             ssh_manager.get_file(
                 remote_path + "filtered_url_1.csv", local_path + "filtered_url_1.csv"
