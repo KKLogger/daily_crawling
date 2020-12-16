@@ -6,8 +6,8 @@ import time
 from SSHManager import SSHManager
 import os
 
-# local_path = "/home/ec2-user/daily_crawling/"
-local_path = "C:/Projects/crawlingCarInfo/to_server/"
+local_path = "/home/ec2-user/daily_crawling/"
+# local_path = "C:/Projects/crawlingCarInfo/to_server/"
 remote_path = "/home/centos/result_from_servers/"
 
 
