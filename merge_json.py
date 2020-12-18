@@ -8,14 +8,15 @@ import sys
 >>> 수집한 json 병합하는 코드
 """
 # local_path = "/home/centos/result_from_servers/"
+# day = datetime.today().strftime("%Y%m%d")
+day = 20201218
+date = day % 10000
+local_path = f"C:/Users/hckim/Desktop/아름드리/{date}/"
 
-local_path = "C:/Users/hckim/Desktop/아름드리/1206/"
-day = datetime.today().strftime("%Y%m%d")
-day = 20201206
 if __name__ == "__main__":
     result = list()
     str_list = list()
-
+    data_num =0
     for server_num in range(1, 31):
         try:
             with open(
@@ -25,6 +26,7 @@ if __name__ == "__main__":
                 errors="ignore",
             ) as f:
                 str_data = f.read()
+            data_num +=1
             str_data = str(str_data)
             str_data = str_data[:]
             str_data = str_data.replace("{}", "")
@@ -47,7 +49,7 @@ if __name__ == "__main__":
             print("Fail", num)
 
     print("총 json에 차량 개수 ", len(result))
-
+    print('json 파일의 개수 ',data_num)
     with open(
         local_path + "KB차차차,{num}건,{day}.json".format(num=len(result), day=day),
         "w",
