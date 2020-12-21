@@ -9,7 +9,7 @@ import sys
 """
 # local_path = "/home/centos/result_from_servers/"
 # day = datetime.today().strftime("%Y%m%d")
-day = 20201218
+day = 20201221
 date = day % 10000
 local_path = f"C:/Users/hckim/Desktop/아름드리/{date}/"
 

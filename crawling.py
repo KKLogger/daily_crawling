@@ -59,8 +59,6 @@ def start(urls, server_num, option_codes):
         except Exception as e:
             print(f"error in dump : {e}")
 
-
-#########################main#################################
 if __name__ == "__main__":
 
     server_num = sys.argv[1]
@@ -68,13 +66,13 @@ if __name__ == "__main__":
 
     for i in range(100):
         if i!=0:
-            ssh_manager.close_ssh_client()
+            ssh_manager.ssh_client = None
         try:
             ssh_manager.create_ssh_client(
                 "133.186.150.193",
                 "centos",
                 "gozjRjwu~!",
-                key_filename=local_path + "shopify.pem",
+                key_filename=local_path + "shopify.pem"
             )  # 세션생성
             ssh_manager.get_file(
                 remote_path + "filtered_url_1.csv", local_path + "filtered_url_1.csv"

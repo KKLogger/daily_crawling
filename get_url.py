@@ -182,7 +182,7 @@ if __name__ == "__main__":
     ssh_manager = SSHManager()
     for i in range(10):
         if i!= 0 :
-            ssh_manager.close_ssh_client()
+            ssh_manager.ssh_client = None
         try:
             ssh_manager.create_ssh_client(
                 "133.186.150.193",
